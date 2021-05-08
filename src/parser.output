@@ -1,0 +1,5100 @@
+Nonterminals useless in grammar
+
+   INITIALISE_DECLARATOR_LIST
+   STRUCT_OR_UNION_SPE
+   STRUCT_OR_UNION
+   STRUCT_DECLARATION_LIST
+   STRUCT_DECLARATION
+   SPE_QUALIFIER_LIST
+   STRUCT_DECLARATOR_LIST
+   STRUCT_DECLARATOR
+   POINTER
+   TYPE_QUALIFIER_LIST
+   TYPE_NAME
+   ABS_DECLARATOR
+   DIRECT_ABS_DECLARATOR
+
+
+Terminals unused in grammar
+
+   T_STRUCT
+   T_UNION
+
+
+Rules useless in grammar
+
+  165 INITIALISE_DECLARATOR_LIST: INITIALISE_DECLARATOR
+  166                           | INITIALISE_DECLARATOR_LIST T_COMMA INITIALISE_DECLARATOR
+
+  167 STRUCT_OR_UNION_SPE: STRUCT_OR_UNION T_VARIABLE T_LCURLY STRUCT_DECLARATION_LIST T_RCURLY
+  168                    | STRUCT_OR_UNION T_LCURLY STRUCT_DECLARATION_LIST T_RCURLY
+  169                    | STRUCT_OR_UNION T_VARIABLE
+
+  170 STRUCT_OR_UNION: T_STRUCT
+  171                | T_UNION
+
+  172 STRUCT_DECLARATION_LIST: STRUCT_DECLARATION
+  173                        | STRUCT_DECLARATION_LIST STRUCT_DECLARATION
+
+  174 STRUCT_DECLARATION: SPE_QUALIFIER_LIST STRUCT_DECLARATOR_LIST T_SEMICOLON
+
+  175 SPE_QUALIFIER_LIST: TYPE_SPE SPE_QUALIFIER_LIST
+  176                   | TYPE_SPE
+  177                   | TYPE_QUALIFIER SPE_QUALIFIER_LIST
+  178                   | TYPE_QUALIFIER
+
+  179 STRUCT_DECLARATOR_LIST: STRUCT_DECLARATOR
+  180                       | STRUCT_DECLARATOR_LIST T_COMMA STRUCT_DECLARATOR
+
+  181 STRUCT_DECLARATOR: DECLARATOR
+  182                  | T_COLON CONST_EXPR
+  183                  | DECLARATOR T_COLON CONST_EXPR
+
+  184 POINTER: T_MULTIPLY
+  185        | T_MULTIPLY TYPE_QUALIFIER_LIST
+  186        | T_MULTIPLY POINTER
+  187        | T_MULTIPLY TYPE_QUALIFIER_LIST POINTER
+
+  188 TYPE_QUALIFIER_LIST: TYPE_QUALIFIER
+  189                    | TYPE_QUALIFIER_LIST TYPE_QUALIFIER
+
+  190 TYPE_NAME: SPE_QUALIFIER_LIST
+  191          | SPE_QUALIFIER_LIST ABS_DECLARATOR
+
+  192 ABS_DECLARATOR: POINTER
+  193               | DIRECT_ABS_DECLARATOR
+  194               | POINTER DIRECT_ABS_DECLARATOR
+
+  195 DIRECT_ABS_DECLARATOR: T_RBRACKET ABS_DECLARATOR T_LBRACKET
+  196                      | L_SQRBRACKET R_SQRBRACKET
+  197                      | L_SQRBRACKET CONST_EXPR R_SQRBRACKET
+  198                      | DIRECT_ABS_DECLARATOR L_SQRBRACKET R_SQRBRACKET
+  199                      | DIRECT_ABS_DECLARATOR L_SQRBRACKET CONST_EXPR R_SQRBRACKET
+  200                      | T_LBRACKET T_RBRACKET
+  201                      | T_LBRACKET PARAM_TYPE_LIST T_RBRACKET
+  202                      | DIRECT_ABS_DECLARATOR T_LBRACKET T_RBRACKET
+  203                      | DIRECT_ABS_DECLARATOR T_LBRACKET PARAM_TYPE_LIST T_LBRACKET
+
+
+State 81 conflicts: 1 shift/reduce
+State 119 conflicts: 2 shift/reduce
+State 142 conflicts: 2 shift/reduce
+State 143 conflicts: 2 shift/reduce
+State 146 conflicts: 2 shift/reduce
+State 213 conflicts: 1 shift/reduce
+State 267 conflicts: 1 shift/reduce
+
+
+Grammar
+
+    0 $accept: ROOT $end
+
+    1 PRIM_EXPR: T_VARIABLE
+    2          | T_NUM
+    3          | T_CHARVAL
+    4          | T_LBRACKET EXPR T_RBRACKET
+
+    5 POSTFIX_EXPR: PRIM_EXPR
+    6             | POSTFIX_EXPR L_SQRBRACKET EXPR R_SQRBRACKET
+    7             | POSTFIX_EXPR T_LBRACKET T_RBRACKET
+    8             | POSTFIX_EXPR T_LBRACKET ARG_EXPR_LIST T_RBRACKET
+    9             | POSTFIX_EXPR T_PERIOD T_VARIABLE
+   10             | UNARY_EXPR INC_OP
+   11             | UNARY_EXPR DEC_OP
+
+   12 ARG_EXPR_LIST: ASSIGN_EXPR
+   13              | ASSIGN_EXPR T_COMMA ARG_EXPR_LIST
+
+   14 UNARY_EXPR: POSTFIX_EXPR
+   15           | UNARY_OP CAST_EXPR
+   16           | INC_OP UNARY_EXPR
+   17           | DEC_OP UNARY_EXPR
+   18           | T_SIZEOF UNARY_EXPR
+   19           | T_SIZEOF T_LBRACKET PRIM_EXPR T_RBRACKET
+   20           | T_SIZEOF T_LBRACKET TYPE_SPE T_RBRACKET
+
+   21 UNARY_OP: T_AND
+   22         | T_MULTIPLY
+   23         | T_ADD
+   24         | T_SUB
+   25         | T_INVERT
+   26         | T_NOT
+
+   27 CAST_EXPR: UNARY_EXPR
+
+   28 MULT_EXPR: CAST_EXPR
+   29          | MULT_EXPR T_MULTIPLY CAST_EXPR
+   30          | MULT_EXPR T_DIV CAST_EXPR
+   31          | MULT_EXPR T_MODULO CAST_EXPR
+
+   32 ADD_EXPR: MULT_EXPR
+   33         | ADD_EXPR T_ADD MULT_EXPR
+   34         | ADD_EXPR T_SUB MULT_EXPR
+
+   35 SHIFT_EXPR: ADD_EXPR
+   36           | SHIFT_EXPR T_SHIFTLEFT ADD_EXPR
+   37           | SHIFT_EXPR T_SHIFTRIGHT ADD_EXPR
+
+   38 COMPARISON_EXPR: SHIFT_EXPR
+   39                | COMPARISON_EXPR T_LESSTHAN SHIFT_EXPR
+   40                | COMPARISON_EXPR T_GREATERTHAN SHIFT_EXPR
+   41                | COMPARISON_EXPR T_LESSTHANEQUAL SHIFT_EXPR
+   42                | COMPARISON_EXPR T_GREATERTHANEQUAL SHIFT_EXPR
+
+   43 EQUAL_EXPR: COMPARISON_EXPR
+   44           | EQUAL_EXPR T_EQUAL COMPARISON_EXPR
+   45           | EQUAL_EXPR T_NOTEQUAL COMPARISON_EXPR
+
+   46 AND_EXPR: EQUAL_EXPR
+   47         | AND_EXPR T_AND EQUAL_EXPR
+
+   48 XOR_EXPR: AND_EXPR
+   49         | XOR_EXPR T_XOR AND_EXPR
+
+   50 INCLUSIVE_OR_EXPR: XOR_EXPR
+   51                  | INCLUSIVE_OR_EXPR T_OR AND_EXPR
+
+   52 LOGIC_AND_EXPR: INCLUSIVE_OR_EXPR
+   53               | LOGIC_AND_EXPR T_AND_OP INCLUSIVE_OR_EXPR
+
+   54 LOGIC_OR_EXPR: LOGIC_AND_EXPR
+   55              | LOGIC_OR_EXPR T_OR_OP LOGIC_AND_EXPR
+
+   56 CONDITION_EXPR: LOGIC_OR_EXPR
+   57               | LOGIC_OR_EXPR T_QUESTION EXPR T_COLON CONDITION_EXPR
+
+   58 ASSIGN_OP: T_ASSIGN
+   59          | T_ADDEQUAL
+   60          | T_DIVIDEEQUAL
+   61          | T_MODEQUAL
+   62          | T_SUBEQUAL
+   63          | T_MULTEQUAL
+   64          | T_LEFTEQUAL
+   65          | T_RIGHTEQUAL
+   66          | T_ANDEQUAL
+   67          | T_XOREQUAL
+   68          | T_OREQUAL
+
+   69 ASSIGN_EXPR: CONDITION_EXPR
+   70            | UNARY_EXPR ASSIGN_OP ASSIGN_EXPR
+
+   71 EXPR: ASSIGN_EXPR
+   72     | EXPR T_COMMA ASSIGN_EXPR
+
+   73 CONST_EXPR: CONDITION_EXPR
+
+   74 DECLARATION: DECLARATION_SPE T_SEMICOLON
+   75            | DECLARATION_SPE INITIALISE_DECLARATOR T_SEMICOLON
+
+   76 DECLARATION_SPE: STORAGE_CLASS_SPE
+   77                | STORAGE_CLASS_SPE DECLARATION_SPE
+   78                | TYPE_SPE
+   79                | TYPE_SPE DECLARATION_SPE
+   80                | TYPE_QUALIFIER
+   81                | TYPE_QUALIFIER DECLARATION_SPE
+
+   82 INITIALISE_DECLARATOR: DECLARATOR
+   83                      | DECLARATOR T_ASSIGN VARIABLE_STORE
+
+   84 STORAGE_CLASS_SPE: T_TYPEDEF
+   85                  | T_EXTERN
+   86                  | T_STATIC
+
+   87 TYPE_SPE: T_VOID
+   88         | T_CHAR
+   89         | T_FLOAT
+   90         | T_INT
+   91         | T_UNSIGNED
+   92         | T_DOUBLE
+   93         | ENUM_SPECIFIER
+
+   94 ENUM_SPECIFIER: T_ENUM T_LCURLY ENUM_LIST T_RCURLY
+   95               | T_ENUM T_VARIABLE T_LCURLY ENUM_LIST T_RCURLY
+   96               | T_ENUM T_VARIABLE
+
+   97 ENUM_LIST: ENUMERATOR
+   98          | ENUM_LIST T_COMMA ENUMERATOR
+
+   99 ENUMERATOR: T_VARIABLE
+  100           | T_VARIABLE T_ASSIGN CONST_EXPR
+
+  101 TYPE_QUALIFIER: T_CONST
+  102               | T_VOLATILE
+
+  103 DECLARATOR: DIRECT_DECL
+
+  104 DIRECT_DECL: T_VARIABLE
+  105            | T_LBRACKET DECLARATOR T_RBRACKET
+  106            | DIRECT_DECL L_SQRBRACKET CONST_EXPR R_SQRBRACKET
+  107            | DIRECT_DECL L_SQRBRACKET R_SQRBRACKET
+  108            | DIRECT_DECL T_LBRACKET PARAM_TYPE_LIST T_RBRACKET
+  109            | DIRECT_DECL T_LBRACKET T_VARIABLE_LIST T_RBRACKET
+  110            | DIRECT_DECL T_LBRACKET T_RBRACKET
+
+  111 PARAM_TYPE_LIST: PARAM_LIST
+  112                | PARAM_LIST T_COMMA T_ELLIPSIS
+
+  113 PARAM_LIST: PARAM_DECLARATION
+  114           | PARAM_LIST T_COMMA PARAM_DECLARATION
+
+  115 PARAM_DECLARATION: DECLARATION_SPE DECLARATOR
+  116                  | DECLARATION_SPE
+
+  117 T_VARIABLE_LIST: T_VARIABLE
+  118                | T_VARIABLE_LIST T_COMMA T_VARIABLE
+
+  119 VARIABLE_STORE: ASSIGN_EXPR
+  120               | T_LCURLY VARIABLE_STORE_LIST T_RCURLY
+  121               | T_LCURLY VARIABLE_STORE_LIST T_COMMA T_RCURLY
+
+  122 VARIABLE_STORE_LIST: VARIABLE_STORE
+  123                    | VARIABLE_STORE_LIST T_COMMA VARIABLE_STORE
+
+  124 STATEMENT: LABELED_STATEMENT
+  125          | COMPOUND_STATEMENT
+  126          | EXPR_STATEMENT
+  127          | SELECT_STATEMENT
+  128          | ITERATION_STATEMENT
+  129          | JUMP_STATEMENT
+
+  130 LABELED_STATEMENT: T_VARIABLE T_COLON STATEMENT
+  131                  | T_CASE CONST_EXPR T_COLON STATEMENT
+  132                  | T_DEFAULT T_COLON STATEMENT
+
+  133 COMPOUND_STATEMENT: T_LCURLY T_RCURLY
+  134                   | T_LCURLY STATEMENT_LIST T_RCURLY
+  135                   | T_LCURLY DECLARATION_LIST T_RCURLY
+  136                   | T_LCURLY DECLARATION_LIST STATEMENT_LIST T_RCURLY
+
+  137 DECLARATION_LIST: DECLARATION
+  138                 | DECLARATION_LIST DECLARATION
+
+  139 STATEMENT_LIST: STATEMENT
+  140               | STATEMENT_LIST STATEMENT
+
+  141 EXPR_STATEMENT: T_SEMICOLON
+  142               | EXPR T_SEMICOLON
+
+  143 SELECT_STATEMENT: T_IF T_LBRACKET EXPR T_RBRACKET STATEMENT
+  144                 | T_IF T_LBRACKET EXPR T_RBRACKET STATEMENT T_ELSE STATEMENT
+  145                 | T_SWITCH T_LBRACKET EXPR T_RBRACKET STATEMENT
+
+  146 ITERATION_STATEMENT: T_WHILE T_LBRACKET EXPR T_RBRACKET STATEMENT
+  147                    | T_DO STATEMENT T_WHILE T_RBRACKET EXPR T_LBRACKET T_SEMICOLON
+  148                    | T_FOR T_LBRACKET EXPR_STATEMENT EXPR_STATEMENT T_RBRACKET STATEMENT
+  149                    | T_FOR T_LBRACKET EXPR_STATEMENT EXPR_STATEMENT EXPR T_RBRACKET STATEMENT
+  150                    | T_FOR T_LBRACKET DECLARATION EXPR_STATEMENT EXPR T_RBRACKET STATEMENT
+
+  151 JUMP_STATEMENT: GOTO T_VARIABLE T_SEMICOLON
+  152               | T_CONTINUE T_SEMICOLON
+  153               | T_BREAK T_SEMICOLON
+  154               | T_RETURN T_SEMICOLON
+  155               | T_RETURN EXPR T_SEMICOLON
+
+  156 TRANSLATION_UNIT: EXTERN_DECL
+  157                 | TRANSLATION_UNIT EXTERN_DECL
+
+  158 EXTERN_DECL: FUNCT_DEF
+  159            | DECLARATION
+
+  160 FUNCT_DEF: DECLARATION_SPE DECLARATOR DECLARATION_LIST COMPOUND_STATEMENT
+  161          | DECLARATION_SPE DECLARATOR COMPOUND_STATEMENT
+  162          | DECLARATOR DECLARATION_LIST COMPOUND_STATEMENT
+  163          | DECLARATOR COMPOUND_STATEMENT
+
+  164 ROOT: TRANSLATION_UNIT
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+T_WHILE (258) 146 147
+T_FOR (259) 148 149 150
+T_IF (260) 143 144
+T_ELSE (261) 144
+T_INT (262) 90
+T_VOID (263) 87
+T_ENUM (264) 94 95 96
+T_RETURN (265) 154 155
+T_BREAK (266) 153
+T_CONTINUE (267) 152
+T_SWITCH (268) 145
+T_CASE (269) 131
+T_DEFAULT (270) 132
+GOTO (271) 151
+T_DO (272) 147
+T_ADDEQUAL (273) 59
+T_DIVIDEEQUAL (274) 60
+T_MODEQUAL (275) 61
+T_SUBEQUAL (276) 62
+T_MULTEQUAL (277) 63
+T_LEFTEQUAL (278) 64
+T_RIGHTEQUAL (279) 65
+T_ANDEQUAL (280) 66
+T_XOREQUAL (281) 67
+T_OREQUAL (282) 68
+T_SHIFTRIGHT (283) 37
+T_SHIFTLEFT (284) 36
+T_LESSTHAN (285) 39
+T_GREATERTHAN (286) 40
+T_GREATERTHANEQUAL (287) 42
+T_LESSTHANEQUAL (288) 41
+T_STRUCT (289)
+T_UNION (290)
+T_OR (291) 51
+T_AND (292) 21 47
+T_NOT (293) 26
+T_MODULO (294) 31
+T_EQUAL (295) 44
+T_ASSIGN (296) 58 83 100
+T_NOTEQUAL (297) 45
+T_INVERT (298) 25
+T_AND_OP (299) 53
+T_OR_OP (300) 55
+T_CONST (301) 101
+T_VOLATILE (302) 102
+T_MULTIPLY (303) 22 29
+T_DIV (304) 30
+T_ADD (305) 23 33
+T_SUB (306) 24 34
+T_XOR (307) 49
+INC_OP (308) 10 16
+DEC_OP (309) 11 17
+T_EXTERN (310) 85
+T_TYPEDEF (311) 84
+T_STATIC (312) 86
+T_ELLIPSIS (313) 112
+T_LBRACKET (314) 4 7 8 19 20 105 108 109 110 143 144 145 146 147 148
+    149 150
+T_RBRACKET (315) 4 7 8 19 20 105 108 109 110 143 144 145 146 147 148
+    149 150
+L_SQRBRACKET (316) 6 106 107
+R_SQRBRACKET (317) 6 106 107
+T_LCURLY (318) 94 95 120 121 133 134 135 136
+T_RCURLY (319) 94 95 120 121 133 134 135 136
+T_SEMICOLON (320) 74 75 141 142 147 151 152 153 154 155
+T_COMMA (321) 13 72 98 112 114 118 121 123
+T_COLON (322) 57 130 131 132
+T_QUESTION (323) 57
+T_PERIOD (324) 9
+T_UNSIGNED (325) 91
+T_CHAR (326) 88
+T_SIZEOF (327) 18 19 20
+T_FLOAT (328) 89
+T_DOUBLE (329) 92
+T_NUM (330) 2
+T_VARIABLE (331) 1 9 95 96 99 100 104 117 118 130 151
+T_CHARVAL (332) 3
+
+
+Nonterminals, with rules where they appear
+
+$accept (78)
+    on left: 0
+PRIM_EXPR (79)
+    on left: 1 2 3 4, on right: 5 19
+POSTFIX_EXPR (80)
+    on left: 5 6 7 8 9 10 11, on right: 6 7 8 9 14
+ARG_EXPR_LIST (81)
+    on left: 12 13, on right: 8 13
+UNARY_EXPR (82)
+    on left: 14 15 16 17 18 19 20, on right: 10 11 16 17 18 27 70
+UNARY_OP (83)
+    on left: 21 22 23 24 25 26, on right: 15
+CAST_EXPR (84)
+    on left: 27, on right: 15 28 29 30 31
+MULT_EXPR (85)
+    on left: 28 29 30 31, on right: 29 30 31 32 33 34
+ADD_EXPR (86)
+    on left: 32 33 34, on right: 33 34 35 36 37
+SHIFT_EXPR (87)
+    on left: 35 36 37, on right: 36 37 38 39 40 41 42
+COMPARISON_EXPR (88)
+    on left: 38 39 40 41 42, on right: 39 40 41 42 43 44 45
+EQUAL_EXPR (89)
+    on left: 43 44 45, on right: 44 45 46 47
+AND_EXPR (90)
+    on left: 46 47, on right: 47 48 49 51
+XOR_EXPR (91)
+    on left: 48 49, on right: 49 50
+INCLUSIVE_OR_EXPR (92)
+    on left: 50 51, on right: 51 52 53
+LOGIC_AND_EXPR (93)
+    on left: 52 53, on right: 53 54 55
+LOGIC_OR_EXPR (94)
+    on left: 54 55, on right: 55 56 57
+CONDITION_EXPR (95)
+    on left: 56 57, on right: 57 69 73
+ASSIGN_OP (96)
+    on left: 58 59 60 61 62 63 64 65 66 67 68, on right: 70
+ASSIGN_EXPR (97)
+    on left: 69 70, on right: 12 13 70 71 72 119
+EXPR (98)
+    on left: 71 72, on right: 4 6 57 72 142 143 144 145 146 147 149
+    150 155
+CONST_EXPR (99)
+    on left: 73, on right: 100 106 131
+DECLARATION (100)
+    on left: 74 75, on right: 137 138 150 159
+DECLARATION_SPE (101)
+    on left: 76 77 78 79 80 81, on right: 74 75 77 79 81 115 116 160
+    161
+INITIALISE_DECLARATOR (102)
+    on left: 82 83, on right: 75
+STORAGE_CLASS_SPE (103)
+    on left: 84 85 86, on right: 76 77
+TYPE_SPE (104)
+    on left: 87 88 89 90 91 92 93, on right: 20 78 79
+ENUM_SPECIFIER (105)
+    on left: 94 95 96, on right: 93
+ENUM_LIST (106)
+    on left: 97 98, on right: 94 95 98
+ENUMERATOR (107)
+    on left: 99 100, on right: 97 98
+TYPE_QUALIFIER (108)
+    on left: 101 102, on right: 80 81
+DECLARATOR (109)
+    on left: 103, on right: 82 83 105 115 160 161 162 163
+DIRECT_DECL (110)
+    on left: 104 105 106 107 108 109 110, on right: 103 106 107 108
+    109 110
+PARAM_TYPE_LIST (111)
+    on left: 111 112, on right: 108
+PARAM_LIST (112)
+    on left: 113 114, on right: 111 112 114
+PARAM_DECLARATION (113)
+    on left: 115 116, on right: 113 114
+T_VARIABLE_LIST (114)
+    on left: 117 118, on right: 109 118
+VARIABLE_STORE (115)
+    on left: 119 120 121, on right: 83 122 123
+VARIABLE_STORE_LIST (116)
+    on left: 122 123, on right: 120 121 123
+STATEMENT (117)
+    on left: 124 125 126 127 128 129, on right: 130 131 132 139 140
+    143 144 145 146 147 148 149 150
+LABELED_STATEMENT (118)
+    on left: 130 131 132, on right: 124
+COMPOUND_STATEMENT (119)
+    on left: 133 134 135 136, on right: 125 160 161 162 163
+DECLARATION_LIST (120)
+    on left: 137 138, on right: 135 136 138 160 162
+STATEMENT_LIST (121)
+    on left: 139 140, on right: 134 136 140
+EXPR_STATEMENT (122)
+    on left: 141 142, on right: 126 148 149 150
+SELECT_STATEMENT (123)
+    on left: 143 144 145, on right: 127
+ITERATION_STATEMENT (124)
+    on left: 146 147 148 149 150, on right: 128
+JUMP_STATEMENT (125)
+    on left: 151 152 153 154 155, on right: 129
+TRANSLATION_UNIT (126)
+    on left: 156 157, on right: 157 164
+EXTERN_DECL (127)
+    on left: 158 159, on right: 156 157
+FUNCT_DEF (128)
+    on left: 160 161 162 163, on right: 158
+ROOT (129)
+    on left: 164, on right: 0
+
+
+State 0
+
+    0 $accept: . ROOT $end
+
+    T_INT       shift, and go to state 1
+    T_VOID      shift, and go to state 2
+    T_ENUM      shift, and go to state 3
+    T_CONST     shift, and go to state 4
+    T_VOLATILE  shift, and go to state 5
+    T_EXTERN    shift, and go to state 6
+    T_TYPEDEF   shift, and go to state 7
+    T_STATIC    shift, and go to state 8
+    T_LBRACKET  shift, and go to state 9
+    T_UNSIGNED  shift, and go to state 10
+    T_CHAR      shift, and go to state 11
+    T_FLOAT     shift, and go to state 12
+    T_DOUBLE    shift, and go to state 13
+    T_VARIABLE  shift, and go to state 14
+
+    DECLARATION        go to state 15
+    DECLARATION_SPE    go to state 16
+    STORAGE_CLASS_SPE  go to state 17
+    TYPE_SPE           go to state 18
+    ENUM_SPECIFIER     go to state 19
+    TYPE_QUALIFIER     go to state 20
+    DECLARATOR         go to state 21
+    DIRECT_DECL        go to state 22
+    TRANSLATION_UNIT   go to state 23
+    EXTERN_DECL        go to state 24
+    FUNCT_DEF          go to state 25
+    ROOT               go to state 26
+
+
+State 1
+
+   90 TYPE_SPE: T_INT .
+
+    $default  reduce using rule 90 (TYPE_SPE)
+
+
+State 2
+
+   87 TYPE_SPE: T_VOID .
+
+    $default  reduce using rule 87 (TYPE_SPE)
+
+
+State 3
+
+   94 ENUM_SPECIFIER: T_ENUM . T_LCURLY ENUM_LIST T_RCURLY
+   95               | T_ENUM . T_VARIABLE T_LCURLY ENUM_LIST T_RCURLY
+   96               | T_ENUM . T_VARIABLE
+
+    T_LCURLY    shift, and go to state 27
+    T_VARIABLE  shift, and go to state 28
+
+
+State 4
+
+  101 TYPE_QUALIFIER: T_CONST .
+
+    $default  reduce using rule 101 (TYPE_QUALIFIER)
+
+
+State 5
+
+  102 TYPE_QUALIFIER: T_VOLATILE .
+
+    $default  reduce using rule 102 (TYPE_QUALIFIER)
+
+
+State 6
+
+   85 STORAGE_CLASS_SPE: T_EXTERN .
+
+    $default  reduce using rule 85 (STORAGE_CLASS_SPE)
+
+
+State 7
+
+   84 STORAGE_CLASS_SPE: T_TYPEDEF .
+
+    $default  reduce using rule 84 (STORAGE_CLASS_SPE)
+
+
+State 8
+
+   86 STORAGE_CLASS_SPE: T_STATIC .
+
+    $default  reduce using rule 86 (STORAGE_CLASS_SPE)
+
+
+State 9
+
+  105 DIRECT_DECL: T_LBRACKET . DECLARATOR T_RBRACKET
+
+    T_LBRACKET  shift, and go to state 9
+    T_VARIABLE  shift, and go to state 14
+
+    DECLARATOR   go to state 29
+    DIRECT_DECL  go to state 22
+
+
+State 10
+
+   91 TYPE_SPE: T_UNSIGNED .
+
+    $default  reduce using rule 91 (TYPE_SPE)
+
+
+State 11
+
+   88 TYPE_SPE: T_CHAR .
+
+    $default  reduce using rule 88 (TYPE_SPE)
+
+
+State 12
+
+   89 TYPE_SPE: T_FLOAT .
+
+    $default  reduce using rule 89 (TYPE_SPE)
+
+
+State 13
+
+   92 TYPE_SPE: T_DOUBLE .
+
+    $default  reduce using rule 92 (TYPE_SPE)
+
+
+State 14
+
+  104 DIRECT_DECL: T_VARIABLE .
+
+    $default  reduce using rule 104 (DIRECT_DECL)
+
+
+State 15
+
+  159 EXTERN_DECL: DECLARATION .
+
+    $default  reduce using rule 159 (EXTERN_DECL)
+
+
+State 16
+
+   74 DECLARATION: DECLARATION_SPE . T_SEMICOLON
+   75            | DECLARATION_SPE . INITIALISE_DECLARATOR T_SEMICOLON
+  160 FUNCT_DEF: DECLARATION_SPE . DECLARATOR DECLARATION_LIST COMPOUND_STATEMENT
+  161          | DECLARATION_SPE . DECLARATOR COMPOUND_STATEMENT
+
+    T_LBRACKET   shift, and go to state 9
+    T_SEMICOLON  shift, and go to state 30
+    T_VARIABLE   shift, and go to state 14
+
+    INITIALISE_DECLARATOR  go to state 31
+    DECLARATOR             go to state 32
+    DIRECT_DECL            go to state 22
+
+
+State 17
+
+   76 DECLARATION_SPE: STORAGE_CLASS_SPE .
+   77                | STORAGE_CLASS_SPE . DECLARATION_SPE
+
+    T_INT       shift, and go to state 1
+    T_VOID      shift, and go to state 2
+    T_ENUM      shift, and go to state 3
+    T_CONST     shift, and go to state 4
+    T_VOLATILE  shift, and go to state 5
+    T_EXTERN    shift, and go to state 6
+    T_TYPEDEF   shift, and go to state 7
+    T_STATIC    shift, and go to state 8
+    T_UNSIGNED  shift, and go to state 10
+    T_CHAR      shift, and go to state 11
+    T_FLOAT     shift, and go to state 12
+    T_DOUBLE    shift, and go to state 13
+
+    $default  reduce using rule 76 (DECLARATION_SPE)
+
+    DECLARATION_SPE    go to state 33
+    STORAGE_CLASS_SPE  go to state 17
+    TYPE_SPE           go to state 18
+    ENUM_SPECIFIER     go to state 19
+    TYPE_QUALIFIER     go to state 20
+
+
+State 18
+
+   78 DECLARATION_SPE: TYPE_SPE .
+   79                | TYPE_SPE . DECLARATION_SPE
+
+    T_INT       shift, and go to state 1
+    T_VOID      shift, and go to state 2
+    T_ENUM      shift, and go to state 3
+    T_CONST     shift, and go to state 4
+    T_VOLATILE  shift, and go to state 5
+    T_EXTERN    shift, and go to state 6
+    T_TYPEDEF   shift, and go to state 7
+    T_STATIC    shift, and go to state 8
+    T_UNSIGNED  shift, and go to state 10
+    T_CHAR      shift, and go to state 11
+    T_FLOAT     shift, and go to state 12
+    T_DOUBLE    shift, and go to state 13
+
+    $default  reduce using rule 78 (DECLARATION_SPE)
+
+    DECLARATION_SPE    go to state 34
+    STORAGE_CLASS_SPE  go to state 17
+    TYPE_SPE           go to state 18
+    ENUM_SPECIFIER     go to state 19
+    TYPE_QUALIFIER     go to state 20
+
+
+State 19
+
+   93 TYPE_SPE: ENUM_SPECIFIER .
+
+    $default  reduce using rule 93 (TYPE_SPE)
+
+
+State 20
+
+   80 DECLARATION_SPE: TYPE_QUALIFIER .
+   81                | TYPE_QUALIFIER . DECLARATION_SPE
+
+    T_INT       shift, and go to state 1
+    T_VOID      shift, and go to state 2
+    T_ENUM      shift, and go to state 3
+    T_CONST     shift, and go to state 4
+    T_VOLATILE  shift, and go to state 5
+    T_EXTERN    shift, and go to state 6
+    T_TYPEDEF   shift, and go to state 7
+    T_STATIC    shift, and go to state 8
+    T_UNSIGNED  shift, and go to state 10
+    T_CHAR      shift, and go to state 11
+    T_FLOAT     shift, and go to state 12
+    T_DOUBLE    shift, and go to state 13
+
+    $default  reduce using rule 80 (DECLARATION_SPE)
+
+    DECLARATION_SPE    go to state 35
+    STORAGE_CLASS_SPE  go to state 17
+    TYPE_SPE           go to state 18
+    ENUM_SPECIFIER     go to state 19
+    TYPE_QUALIFIER     go to state 20
+
+
+State 21
+
+  162 FUNCT_DEF: DECLARATOR . DECLARATION_LIST COMPOUND_STATEMENT
+  163          | DECLARATOR . COMPOUND_STATEMENT
+
+    T_INT       shift, and go to state 1
+    T_VOID      shift, and go to state 2
+    T_ENUM      shift, and go to state 3
+    T_CONST     shift, and go to state 4
+    T_VOLATILE  shift, and go to state 5
+    T_EXTERN    shift, and go to state 6
+    T_TYPEDEF   shift, and go to state 7
+    T_STATIC    shift, and go to state 8
+    T_LCURLY    shift, and go to state 36
+    T_UNSIGNED  shift, and go to state 10
+    T_CHAR      shift, and go to state 11
+    T_FLOAT     shift, and go to state 12
+    T_DOUBLE    shift, and go to state 13
+
+    DECLARATION         go to state 37
+    DECLARATION_SPE     go to state 38
+    STORAGE_CLASS_SPE   go to state 17
+    TYPE_SPE            go to state 18
+    ENUM_SPECIFIER      go to state 19
+    TYPE_QUALIFIER      go to state 20
+    COMPOUND_STATEMENT  go to state 39
+    DECLARATION_LIST    go to state 40
+
+
+State 22
+
+  103 DECLARATOR: DIRECT_DECL .
+  106 DIRECT_DECL: DIRECT_DECL . L_SQRBRACKET CONST_EXPR R_SQRBRACKET
+  107            | DIRECT_DECL . L_SQRBRACKET R_SQRBRACKET
+  108            | DIRECT_DECL . T_LBRACKET PARAM_TYPE_LIST T_RBRACKET
+  109            | DIRECT_DECL . T_LBRACKET T_VARIABLE_LIST T_RBRACKET
+  110            | DIRECT_DECL . T_LBRACKET T_RBRACKET
+
+    T_LBRACKET    shift, and go to state 41
+    L_SQRBRACKET  shift, and go to state 42
+
+    $default  reduce using rule 103 (DECLARATOR)
+
+
+State 23
+
+  157 TRANSLATION_UNIT: TRANSLATION_UNIT . EXTERN_DECL
+  164 ROOT: TRANSLATION_UNIT .
+
+    T_INT       shift, and go to state 1
+    T_VOID      shift, and go to state 2
+    T_ENUM      shift, and go to state 3
+    T_CONST     shift, and go to state 4
+    T_VOLATILE  shift, and go to state 5
+    T_EXTERN    shift, and go to state 6
+    T_TYPEDEF   shift, and go to state 7
+    T_STATIC    shift, and go to state 8
+    T_LBRACKET  shift, and go to state 9
+    T_UNSIGNED  shift, and go to state 10
+    T_CHAR      shift, and go to state 11
+    T_FLOAT     shift, and go to state 12
+    T_DOUBLE    shift, and go to state 13
+    T_VARIABLE  shift, and go to state 14
+
+    $default  reduce using rule 164 (ROOT)
+
+    DECLARATION        go to state 15
+    DECLARATION_SPE    go to state 16
+    STORAGE_CLASS_SPE  go to state 17
+    TYPE_SPE           go to state 18
+    ENUM_SPECIFIER     go to state 19
+    TYPE_QUALIFIER     go to state 20
+    DECLARATOR         go to state 21
+    DIRECT_DECL        go to state 22
+    EXTERN_DECL        go to state 43
+    FUNCT_DEF          go to state 25
+
+
+State 24
+
+  156 TRANSLATION_UNIT: EXTERN_DECL .
+
+    $default  reduce using rule 156 (TRANSLATION_UNIT)
+
+
+State 25
+
+  158 EXTERN_DECL: FUNCT_DEF .
+
+    $default  reduce using rule 158 (EXTERN_DECL)
+
+
+State 26
+
+    0 $accept: ROOT . $end
+
+    $end  shift, and go to state 44
+
+
+State 27
+
+   94 ENUM_SPECIFIER: T_ENUM T_LCURLY . ENUM_LIST T_RCURLY
+
+    T_VARIABLE  shift, and go to state 45
+
+    ENUM_LIST   go to state 46
+    ENUMERATOR  go to state 47
+
+
+State 28
+
+   95 ENUM_SPECIFIER: T_ENUM T_VARIABLE . T_LCURLY ENUM_LIST T_RCURLY
+   96               | T_ENUM T_VARIABLE .
+
+    T_LCURLY  shift, and go to state 48
+
+    $default  reduce using rule 96 (ENUM_SPECIFIER)
+
+
+State 29
+
+  105 DIRECT_DECL: T_LBRACKET DECLARATOR . T_RBRACKET
+
+    T_RBRACKET  shift, and go to state 49
+
+
+State 30
+
+   74 DECLARATION: DECLARATION_SPE T_SEMICOLON .
+
+    $default  reduce using rule 74 (DECLARATION)
+
+
+State 31
+
+   75 DECLARATION: DECLARATION_SPE INITIALISE_DECLARATOR . T_SEMICOLON
+
+    T_SEMICOLON  shift, and go to state 50
+
+
+State 32
+
+   82 INITIALISE_DECLARATOR: DECLARATOR .
+   83                      | DECLARATOR . T_ASSIGN VARIABLE_STORE
+  160 FUNCT_DEF: DECLARATION_SPE DECLARATOR . DECLARATION_LIST COMPOUND_STATEMENT
+  161          | DECLARATION_SPE DECLARATOR . COMPOUND_STATEMENT
+
+    T_INT       shift, and go to state 1
+    T_VOID      shift, and go to state 2
+    T_ENUM      shift, and go to state 3
+    T_ASSIGN    shift, and go to state 51
+    T_CONST     shift, and go to state 4
+    T_VOLATILE  shift, and go to state 5
+    T_EXTERN    shift, and go to state 6
+    T_TYPEDEF   shift, and go to state 7
+    T_STATIC    shift, and go to state 8
+    T_LCURLY    shift, and go to state 36
+    T_UNSIGNED  shift, and go to state 10
+    T_CHAR      shift, and go to state 11
+    T_FLOAT     shift, and go to state 12
+    T_DOUBLE    shift, and go to state 13
+
+    $default  reduce using rule 82 (INITIALISE_DECLARATOR)
+
+    DECLARATION         go to state 37
+    DECLARATION_SPE     go to state 38
+    STORAGE_CLASS_SPE   go to state 17
+    TYPE_SPE            go to state 18
+    ENUM_SPECIFIER      go to state 19
+    TYPE_QUALIFIER      go to state 20
+    COMPOUND_STATEMENT  go to state 52
+    DECLARATION_LIST    go to state 53
+
+
+State 33
+
+   77 DECLARATION_SPE: STORAGE_CLASS_SPE DECLARATION_SPE .
+
+    $default  reduce using rule 77 (DECLARATION_SPE)
+
+
+State 34
+
+   79 DECLARATION_SPE: TYPE_SPE DECLARATION_SPE .
+
+    $default  reduce using rule 79 (DECLARATION_SPE)
+
+
+State 35
+
+   81 DECLARATION_SPE: TYPE_QUALIFIER DECLARATION_SPE .
+
+    $default  reduce using rule 81 (DECLARATION_SPE)
+
+
+State 36
+
+  133 COMPOUND_STATEMENT: T_LCURLY . T_RCURLY
+  134                   | T_LCURLY . STATEMENT_LIST T_RCURLY
+  135                   | T_LCURLY . DECLARATION_LIST T_RCURLY
+  136                   | T_LCURLY . DECLARATION_LIST STATEMENT_LIST T_RCURLY
+
+    T_WHILE      shift, and go to state 54
+    T_FOR        shift, and go to state 55
+    T_IF         shift, and go to state 56
+    T_INT        shift, and go to state 1
+    T_VOID       shift, and go to state 2
+    T_ENUM       shift, and go to state 3
+    T_RETURN     shift, and go to state 57
+    T_BREAK      shift, and go to state 58
+    T_CONTINUE   shift, and go to state 59
+    T_SWITCH     shift, and go to state 60
+    T_CASE       shift, and go to state 61
+    T_DEFAULT    shift, and go to state 62
+    GOTO         shift, and go to state 63
+    T_DO         shift, and go to state 64
+    T_AND        shift, and go to state 65
+    T_NOT        shift, and go to state 66
+    T_INVERT     shift, and go to state 67
+    T_CONST      shift, and go to state 4
+    T_VOLATILE   shift, and go to state 5
+    T_MULTIPLY   shift, and go to state 68
+    T_ADD        shift, and go to state 69
+    T_SUB        shift, and go to state 70
+    INC_OP       shift, and go to state 71
+    DEC_OP       shift, and go to state 72
+    T_EXTERN     shift, and go to state 6
+    T_TYPEDEF    shift, and go to state 7
+    T_STATIC     shift, and go to state 8
+    T_LBRACKET   shift, and go to state 73
+    T_LCURLY     shift, and go to state 36
+    T_RCURLY     shift, and go to state 74
+    T_SEMICOLON  shift, and go to state 75
+    T_UNSIGNED   shift, and go to state 10
+    T_CHAR       shift, and go to state 11
+    T_SIZEOF     shift, and go to state 76
+    T_FLOAT      shift, and go to state 12
+    T_DOUBLE     shift, and go to state 13
+    T_NUM        shift, and go to state 77
+    T_VARIABLE   shift, and go to state 78
+    T_CHARVAL    shift, and go to state 79
+
+    PRIM_EXPR            go to state 80
+    POSTFIX_EXPR         go to state 81
+    UNARY_EXPR           go to state 82
+    UNARY_OP             go to state 83
+    CAST_EXPR            go to state 84
+    MULT_EXPR            go to state 85
+    ADD_EXPR             go to state 86
+    SHIFT_EXPR           go to state 87
+    COMPARISON_EXPR      go to state 88
+    EQUAL_EXPR           go to state 89
+    AND_EXPR             go to state 90
+    XOR_EXPR             go to state 91
+    INCLUSIVE_OR_EXPR    go to state 92
+    LOGIC_AND_EXPR       go to state 93
+    LOGIC_OR_EXPR        go to state 94
+    CONDITION_EXPR       go to state 95
+    ASSIGN_EXPR          go to state 96
+    EXPR                 go to state 97
+    DECLARATION          go to state 37
+    DECLARATION_SPE      go to state 38
+    STORAGE_CLASS_SPE    go to state 17
+    TYPE_SPE             go to state 18
+    ENUM_SPECIFIER       go to state 19
+    TYPE_QUALIFIER       go to state 20
+    STATEMENT            go to state 98
+    LABELED_STATEMENT    go to state 99
+    COMPOUND_STATEMENT   go to state 100
+    DECLARATION_LIST     go to state 101
+    STATEMENT_LIST       go to state 102
+    EXPR_STATEMENT       go to state 103
+    SELECT_STATEMENT     go to state 104
+    ITERATION_STATEMENT  go to state 105
+    JUMP_STATEMENT       go to state 106
+
+
+State 37
+
+  137 DECLARATION_LIST: DECLARATION .
+
+    $default  reduce using rule 137 (DECLARATION_LIST)
+
+
+State 38
+
+   74 DECLARATION: DECLARATION_SPE . T_SEMICOLON
+   75            | DECLARATION_SPE . INITIALISE_DECLARATOR T_SEMICOLON
+
+    T_LBRACKET   shift, and go to state 9
+    T_SEMICOLON  shift, and go to state 30
+    T_VARIABLE   shift, and go to state 14
+
+    INITIALISE_DECLARATOR  go to state 31
+    DECLARATOR             go to state 107
+    DIRECT_DECL            go to state 22
+
+
+State 39
+
+  163 FUNCT_DEF: DECLARATOR COMPOUND_STATEMENT .
+
+    $default  reduce using rule 163 (FUNCT_DEF)
+
+
+State 40
+
+  138 DECLARATION_LIST: DECLARATION_LIST . DECLARATION
+  162 FUNCT_DEF: DECLARATOR DECLARATION_LIST . COMPOUND_STATEMENT
+
+    T_INT       shift, and go to state 1
+    T_VOID      shift, and go to state 2
+    T_ENUM      shift, and go to state 3
+    T_CONST     shift, and go to state 4
+    T_VOLATILE  shift, and go to state 5
+    T_EXTERN    shift, and go to state 6
+    T_TYPEDEF   shift, and go to state 7
+    T_STATIC    shift, and go to state 8
+    T_LCURLY    shift, and go to state 36
+    T_UNSIGNED  shift, and go to state 10
+    T_CHAR      shift, and go to state 11
+    T_FLOAT     shift, and go to state 12
+    T_DOUBLE    shift, and go to state 13
+
+    DECLARATION         go to state 108
+    DECLARATION_SPE     go to state 38
+    STORAGE_CLASS_SPE   go to state 17
+    TYPE_SPE            go to state 18
+    ENUM_SPECIFIER      go to state 19
+    TYPE_QUALIFIER      go to state 20
+    COMPOUND_STATEMENT  go to state 109
+
+
+State 41
+
+  108 DIRECT_DECL: DIRECT_DECL T_LBRACKET . PARAM_TYPE_LIST T_RBRACKET
+  109            | DIRECT_DECL T_LBRACKET . T_VARIABLE_LIST T_RBRACKET
+  110            | DIRECT_DECL T_LBRACKET . T_RBRACKET
+
+    T_INT       shift, and go to state 1
+    T_VOID      shift, and go to state 2
+    T_ENUM      shift, and go to state 3
+    T_CONST     shift, and go to state 4
+    T_VOLATILE  shift, and go to state 5
+    T_EXTERN    shift, and go to state 6
+    T_TYPEDEF   shift, and go to state 7
+    T_STATIC    shift, and go to state 8
+    T_RBRACKET  shift, and go to state 110
+    T_UNSIGNED  shift, and go to state 10
+    T_CHAR      shift, and go to state 11
+    T_FLOAT     shift, and go to state 12
+    T_DOUBLE    shift, and go to state 13
+    T_VARIABLE  shift, and go to state 111
+
+    DECLARATION_SPE    go to state 112
+    STORAGE_CLASS_SPE  go to state 17
+    TYPE_SPE           go to state 18
+    ENUM_SPECIFIER     go to state 19
+    TYPE_QUALIFIER     go to state 20
+    PARAM_TYPE_LIST    go to state 113
+    PARAM_LIST         go to state 114
+    PARAM_DECLARATION  go to state 115
+    T_VARIABLE_LIST    go to state 116
+
+
+State 42
+
+  106 DIRECT_DECL: DIRECT_DECL L_SQRBRACKET . CONST_EXPR R_SQRBRACKET
+  107            | DIRECT_DECL L_SQRBRACKET . R_SQRBRACKET
+
+    T_AND         shift, and go to state 65
+    T_NOT         shift, and go to state 66
+    T_INVERT      shift, and go to state 67
+    T_MULTIPLY    shift, and go to state 68
+    T_ADD         shift, and go to state 69
+    T_SUB         shift, and go to state 70
+    INC_OP        shift, and go to state 71
+    DEC_OP        shift, and go to state 72
+    T_LBRACKET    shift, and go to state 73
+    R_SQRBRACKET  shift, and go to state 117
+    T_SIZEOF      shift, and go to state 76
+    T_NUM         shift, and go to state 77
+    T_VARIABLE    shift, and go to state 118
+    T_CHARVAL     shift, and go to state 79
+
+    PRIM_EXPR          go to state 80
+    POSTFIX_EXPR       go to state 81
+    UNARY_EXPR         go to state 119
+    UNARY_OP           go to state 83
+    CAST_EXPR          go to state 84
+    MULT_EXPR          go to state 85
+    ADD_EXPR           go to state 86
+    SHIFT_EXPR         go to state 87
+    COMPARISON_EXPR    go to state 88
+    EQUAL_EXPR         go to state 89
+    AND_EXPR           go to state 90
+    XOR_EXPR           go to state 91
+    INCLUSIVE_OR_EXPR  go to state 92
+    LOGIC_AND_EXPR     go to state 93
+    LOGIC_OR_EXPR      go to state 94
+    CONDITION_EXPR     go to state 120
+    CONST_EXPR         go to state 121
+
+
+State 43
+
+  157 TRANSLATION_UNIT: TRANSLATION_UNIT EXTERN_DECL .
+
+    $default  reduce using rule 157 (TRANSLATION_UNIT)
+
+
+State 44
+
+    0 $accept: ROOT $end .
+
+    $default  accept
+
+
+State 45
+
+   99 ENUMERATOR: T_VARIABLE .
+  100           | T_VARIABLE . T_ASSIGN CONST_EXPR
+
+    T_ASSIGN  shift, and go to state 122
+
+    $default  reduce using rule 99 (ENUMERATOR)
+
+
+State 46
+
+   94 ENUM_SPECIFIER: T_ENUM T_LCURLY ENUM_LIST . T_RCURLY
+   98 ENUM_LIST: ENUM_LIST . T_COMMA ENUMERATOR
+
+    T_RCURLY  shift, and go to state 123
+    T_COMMA   shift, and go to state 124
+
+
+State 47
+
+   97 ENUM_LIST: ENUMERATOR .
+
+    $default  reduce using rule 97 (ENUM_LIST)
+
+
+State 48
+
+   95 ENUM_SPECIFIER: T_ENUM T_VARIABLE T_LCURLY . ENUM_LIST T_RCURLY
+
+    T_VARIABLE  shift, and go to state 45
+
+    ENUM_LIST   go to state 125
+    ENUMERATOR  go to state 47
+
+
+State 49
+
+  105 DIRECT_DECL: T_LBRACKET DECLARATOR T_RBRACKET .
+
+    $default  reduce using rule 105 (DIRECT_DECL)
+
+
+State 50
+
+   75 DECLARATION: DECLARATION_SPE INITIALISE_DECLARATOR T_SEMICOLON .
+
+    $default  reduce using rule 75 (DECLARATION)
+
+
+State 51
+
+   83 INITIALISE_DECLARATOR: DECLARATOR T_ASSIGN . VARIABLE_STORE
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_LCURLY    shift, and go to state 126
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR          go to state 80
+    POSTFIX_EXPR       go to state 81
+    UNARY_EXPR         go to state 82
+    UNARY_OP           go to state 83
+    CAST_EXPR          go to state 84
+    MULT_EXPR          go to state 85
+    ADD_EXPR           go to state 86
+    SHIFT_EXPR         go to state 87
+    COMPARISON_EXPR    go to state 88
+    EQUAL_EXPR         go to state 89
+    AND_EXPR           go to state 90
+    XOR_EXPR           go to state 91
+    INCLUSIVE_OR_EXPR  go to state 92
+    LOGIC_AND_EXPR     go to state 93
+    LOGIC_OR_EXPR      go to state 94
+    CONDITION_EXPR     go to state 95
+    ASSIGN_EXPR        go to state 127
+    VARIABLE_STORE     go to state 128
+
+
+State 52
+
+  161 FUNCT_DEF: DECLARATION_SPE DECLARATOR COMPOUND_STATEMENT .
+
+    $default  reduce using rule 161 (FUNCT_DEF)
+
+
+State 53
+
+  138 DECLARATION_LIST: DECLARATION_LIST . DECLARATION
+  160 FUNCT_DEF: DECLARATION_SPE DECLARATOR DECLARATION_LIST . COMPOUND_STATEMENT
+
+    T_INT       shift, and go to state 1
+    T_VOID      shift, and go to state 2
+    T_ENUM      shift, and go to state 3
+    T_CONST     shift, and go to state 4
+    T_VOLATILE  shift, and go to state 5
+    T_EXTERN    shift, and go to state 6
+    T_TYPEDEF   shift, and go to state 7
+    T_STATIC    shift, and go to state 8
+    T_LCURLY    shift, and go to state 36
+    T_UNSIGNED  shift, and go to state 10
+    T_CHAR      shift, and go to state 11
+    T_FLOAT     shift, and go to state 12
+    T_DOUBLE    shift, and go to state 13
+
+    DECLARATION         go to state 108
+    DECLARATION_SPE     go to state 38
+    STORAGE_CLASS_SPE   go to state 17
+    TYPE_SPE            go to state 18
+    ENUM_SPECIFIER      go to state 19
+    TYPE_QUALIFIER      go to state 20
+    COMPOUND_STATEMENT  go to state 129
+
+
+State 54
+
+  146 ITERATION_STATEMENT: T_WHILE . T_LBRACKET EXPR T_RBRACKET STATEMENT
+
+    T_LBRACKET  shift, and go to state 130
+
+
+State 55
+
+  148 ITERATION_STATEMENT: T_FOR . T_LBRACKET EXPR_STATEMENT EXPR_STATEMENT T_RBRACKET STATEMENT
+  149                    | T_FOR . T_LBRACKET EXPR_STATEMENT EXPR_STATEMENT EXPR T_RBRACKET STATEMENT
+  150                    | T_FOR . T_LBRACKET DECLARATION EXPR_STATEMENT EXPR T_RBRACKET STATEMENT
+
+    T_LBRACKET  shift, and go to state 131
+
+
+State 56
+
+  143 SELECT_STATEMENT: T_IF . T_LBRACKET EXPR T_RBRACKET STATEMENT
+  144                 | T_IF . T_LBRACKET EXPR T_RBRACKET STATEMENT T_ELSE STATEMENT
+
+    T_LBRACKET  shift, and go to state 132
+
+
+State 57
+
+  154 JUMP_STATEMENT: T_RETURN . T_SEMICOLON
+  155               | T_RETURN . EXPR T_SEMICOLON
+
+    T_AND        shift, and go to state 65
+    T_NOT        shift, and go to state 66
+    T_INVERT     shift, and go to state 67
+    T_MULTIPLY   shift, and go to state 68
+    T_ADD        shift, and go to state 69
+    T_SUB        shift, and go to state 70
+    INC_OP       shift, and go to state 71
+    DEC_OP       shift, and go to state 72
+    T_LBRACKET   shift, and go to state 73
+    T_SEMICOLON  shift, and go to state 133
+    T_SIZEOF     shift, and go to state 76
+    T_NUM        shift, and go to state 77
+    T_VARIABLE   shift, and go to state 118
+    T_CHARVAL    shift, and go to state 79
+
+    PRIM_EXPR          go to state 80
+    POSTFIX_EXPR       go to state 81
+    UNARY_EXPR         go to state 82
+    UNARY_OP           go to state 83
+    CAST_EXPR          go to state 84
+    MULT_EXPR          go to state 85
+    ADD_EXPR           go to state 86
+    SHIFT_EXPR         go to state 87
+    COMPARISON_EXPR    go to state 88
+    EQUAL_EXPR         go to state 89
+    AND_EXPR           go to state 90
+    XOR_EXPR           go to state 91
+    INCLUSIVE_OR_EXPR  go to state 92
+    LOGIC_AND_EXPR     go to state 93
+    LOGIC_OR_EXPR      go to state 94
+    CONDITION_EXPR     go to state 95
+    ASSIGN_EXPR        go to state 96
+    EXPR               go to state 134
+
+
+State 58
+
+  153 JUMP_STATEMENT: T_BREAK . T_SEMICOLON
+
+    T_SEMICOLON  shift, and go to state 135
+
+
+State 59
+
+  152 JUMP_STATEMENT: T_CONTINUE . T_SEMICOLON
+
+    T_SEMICOLON  shift, and go to state 136
+
+
+State 60
+
+  145 SELECT_STATEMENT: T_SWITCH . T_LBRACKET EXPR T_RBRACKET STATEMENT
+
+    T_LBRACKET  shift, and go to state 137
+
+
+State 61
+
+  131 LABELED_STATEMENT: T_CASE . CONST_EXPR T_COLON STATEMENT
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR          go to state 80
+    POSTFIX_EXPR       go to state 81
+    UNARY_EXPR         go to state 119
+    UNARY_OP           go to state 83
+    CAST_EXPR          go to state 84
+    MULT_EXPR          go to state 85
+    ADD_EXPR           go to state 86
+    SHIFT_EXPR         go to state 87
+    COMPARISON_EXPR    go to state 88
+    EQUAL_EXPR         go to state 89
+    AND_EXPR           go to state 90
+    XOR_EXPR           go to state 91
+    INCLUSIVE_OR_EXPR  go to state 92
+    LOGIC_AND_EXPR     go to state 93
+    LOGIC_OR_EXPR      go to state 94
+    CONDITION_EXPR     go to state 120
+    CONST_EXPR         go to state 138
+
+
+State 62
+
+  132 LABELED_STATEMENT: T_DEFAULT . T_COLON STATEMENT
+
+    T_COLON  shift, and go to state 139
+
+
+State 63
+
+  151 JUMP_STATEMENT: GOTO . T_VARIABLE T_SEMICOLON
+
+    T_VARIABLE  shift, and go to state 140
+
+
+State 64
+
+  147 ITERATION_STATEMENT: T_DO . STATEMENT T_WHILE T_RBRACKET EXPR T_LBRACKET T_SEMICOLON
+
+    T_WHILE      shift, and go to state 54
+    T_FOR        shift, and go to state 55
+    T_IF         shift, and go to state 56
+    T_RETURN     shift, and go to state 57
+    T_BREAK      shift, and go to state 58
+    T_CONTINUE   shift, and go to state 59
+    T_SWITCH     shift, and go to state 60
+    T_CASE       shift, and go to state 61
+    T_DEFAULT    shift, and go to state 62
+    GOTO         shift, and go to state 63
+    T_DO         shift, and go to state 64
+    T_AND        shift, and go to state 65
+    T_NOT        shift, and go to state 66
+    T_INVERT     shift, and go to state 67
+    T_MULTIPLY   shift, and go to state 68
+    T_ADD        shift, and go to state 69
+    T_SUB        shift, and go to state 70
+    INC_OP       shift, and go to state 71
+    DEC_OP       shift, and go to state 72
+    T_LBRACKET   shift, and go to state 73
+    T_LCURLY     shift, and go to state 36
+    T_SEMICOLON  shift, and go to state 75
+    T_SIZEOF     shift, and go to state 76
+    T_NUM        shift, and go to state 77
+    T_VARIABLE   shift, and go to state 78
+    T_CHARVAL    shift, and go to state 79
+
+    PRIM_EXPR            go to state 80
+    POSTFIX_EXPR         go to state 81
+    UNARY_EXPR           go to state 82
+    UNARY_OP             go to state 83
+    CAST_EXPR            go to state 84
+    MULT_EXPR            go to state 85
+    ADD_EXPR             go to state 86
+    SHIFT_EXPR           go to state 87
+    COMPARISON_EXPR      go to state 88
+    EQUAL_EXPR           go to state 89
+    AND_EXPR             go to state 90
+    XOR_EXPR             go to state 91
+    INCLUSIVE_OR_EXPR    go to state 92
+    LOGIC_AND_EXPR       go to state 93
+    LOGIC_OR_EXPR        go to state 94
+    CONDITION_EXPR       go to state 95
+    ASSIGN_EXPR          go to state 96
+    EXPR                 go to state 97
+    STATEMENT            go to state 141
+    LABELED_STATEMENT    go to state 99
+    COMPOUND_STATEMENT   go to state 100
+    EXPR_STATEMENT       go to state 103
+    SELECT_STATEMENT     go to state 104
+    ITERATION_STATEMENT  go to state 105
+    JUMP_STATEMENT       go to state 106
+
+
+State 65
+
+   21 UNARY_OP: T_AND .
+
+    $default  reduce using rule 21 (UNARY_OP)
+
+
+State 66
+
+   26 UNARY_OP: T_NOT .
+
+    $default  reduce using rule 26 (UNARY_OP)
+
+
+State 67
+
+   25 UNARY_OP: T_INVERT .
+
+    $default  reduce using rule 25 (UNARY_OP)
+
+
+State 68
+
+   22 UNARY_OP: T_MULTIPLY .
+
+    $default  reduce using rule 22 (UNARY_OP)
+
+
+State 69
+
+   23 UNARY_OP: T_ADD .
+
+    $default  reduce using rule 23 (UNARY_OP)
+
+
+State 70
+
+   24 UNARY_OP: T_SUB .
+
+    $default  reduce using rule 24 (UNARY_OP)
+
+
+State 71
+
+   16 UNARY_EXPR: INC_OP . UNARY_EXPR
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR     go to state 80
+    POSTFIX_EXPR  go to state 81
+    UNARY_EXPR    go to state 142
+    UNARY_OP      go to state 83
+
+
+State 72
+
+   17 UNARY_EXPR: DEC_OP . UNARY_EXPR
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR     go to state 80
+    POSTFIX_EXPR  go to state 81
+    UNARY_EXPR    go to state 143
+    UNARY_OP      go to state 83
+
+
+State 73
+
+    4 PRIM_EXPR: T_LBRACKET . EXPR T_RBRACKET
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR          go to state 80
+    POSTFIX_EXPR       go to state 81
+    UNARY_EXPR         go to state 82
+    UNARY_OP           go to state 83
+    CAST_EXPR          go to state 84
+    MULT_EXPR          go to state 85
+    ADD_EXPR           go to state 86
+    SHIFT_EXPR         go to state 87
+    COMPARISON_EXPR    go to state 88
+    EQUAL_EXPR         go to state 89
+    AND_EXPR           go to state 90
+    XOR_EXPR           go to state 91
+    INCLUSIVE_OR_EXPR  go to state 92
+    LOGIC_AND_EXPR     go to state 93
+    LOGIC_OR_EXPR      go to state 94
+    CONDITION_EXPR     go to state 95
+    ASSIGN_EXPR        go to state 96
+    EXPR               go to state 144
+
+
+State 74
+
+  133 COMPOUND_STATEMENT: T_LCURLY T_RCURLY .
+
+    $default  reduce using rule 133 (COMPOUND_STATEMENT)
+
+
+State 75
+
+  141 EXPR_STATEMENT: T_SEMICOLON .
+
+    $default  reduce using rule 141 (EXPR_STATEMENT)
+
+
+State 76
+
+   18 UNARY_EXPR: T_SIZEOF . UNARY_EXPR
+   19           | T_SIZEOF . T_LBRACKET PRIM_EXPR T_RBRACKET
+   20           | T_SIZEOF . T_LBRACKET TYPE_SPE T_RBRACKET
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 145
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR     go to state 80
+    POSTFIX_EXPR  go to state 81
+    UNARY_EXPR    go to state 146
+    UNARY_OP      go to state 83
+
+
+State 77
+
+    2 PRIM_EXPR: T_NUM .
+
+    $default  reduce using rule 2 (PRIM_EXPR)
+
+
+State 78
+
+    1 PRIM_EXPR: T_VARIABLE .
+  130 LABELED_STATEMENT: T_VARIABLE . T_COLON STATEMENT
+
+    T_COLON  shift, and go to state 147
+
+    $default  reduce using rule 1 (PRIM_EXPR)
+
+
+State 79
+
+    3 PRIM_EXPR: T_CHARVAL .
+
+    $default  reduce using rule 3 (PRIM_EXPR)
+
+
+State 80
+
+    5 POSTFIX_EXPR: PRIM_EXPR .
+
+    $default  reduce using rule 5 (POSTFIX_EXPR)
+
+
+State 81
+
+    6 POSTFIX_EXPR: POSTFIX_EXPR . L_SQRBRACKET EXPR R_SQRBRACKET
+    7             | POSTFIX_EXPR . T_LBRACKET T_RBRACKET
+    8             | POSTFIX_EXPR . T_LBRACKET ARG_EXPR_LIST T_RBRACKET
+    9             | POSTFIX_EXPR . T_PERIOD T_VARIABLE
+   14 UNARY_EXPR: POSTFIX_EXPR .
+
+    T_LBRACKET    shift, and go to state 148
+    L_SQRBRACKET  shift, and go to state 149
+    T_PERIOD      shift, and go to state 150
+
+    T_LBRACKET  [reduce using rule 14 (UNARY_EXPR)]
+    $default    reduce using rule 14 (UNARY_EXPR)
+
+
+State 82
+
+   10 POSTFIX_EXPR: UNARY_EXPR . INC_OP
+   11             | UNARY_EXPR . DEC_OP
+   27 CAST_EXPR: UNARY_EXPR .
+   70 ASSIGN_EXPR: UNARY_EXPR . ASSIGN_OP ASSIGN_EXPR
+
+    T_ADDEQUAL     shift, and go to state 151
+    T_DIVIDEEQUAL  shift, and go to state 152
+    T_MODEQUAL     shift, and go to state 153
+    T_SUBEQUAL     shift, and go to state 154
+    T_MULTEQUAL    shift, and go to state 155
+    T_LEFTEQUAL    shift, and go to state 156
+    T_RIGHTEQUAL   shift, and go to state 157
+    T_ANDEQUAL     shift, and go to state 158
+    T_XOREQUAL     shift, and go to state 159
+    T_OREQUAL      shift, and go to state 160
+    T_ASSIGN       shift, and go to state 161
+    INC_OP         shift, and go to state 162
+    DEC_OP         shift, and go to state 163
+
+    $default  reduce using rule 27 (CAST_EXPR)
+
+    ASSIGN_OP  go to state 164
+
+
+State 83
+
+   15 UNARY_EXPR: UNARY_OP . CAST_EXPR
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR     go to state 80
+    POSTFIX_EXPR  go to state 81
+    UNARY_EXPR    go to state 119
+    UNARY_OP      go to state 83
+    CAST_EXPR     go to state 165
+
+
+State 84
+
+   28 MULT_EXPR: CAST_EXPR .
+
+    $default  reduce using rule 28 (MULT_EXPR)
+
+
+State 85
+
+   29 MULT_EXPR: MULT_EXPR . T_MULTIPLY CAST_EXPR
+   30          | MULT_EXPR . T_DIV CAST_EXPR
+   31          | MULT_EXPR . T_MODULO CAST_EXPR
+   32 ADD_EXPR: MULT_EXPR .
+
+    T_MODULO    shift, and go to state 166
+    T_MULTIPLY  shift, and go to state 167
+    T_DIV       shift, and go to state 168
+
+    $default  reduce using rule 32 (ADD_EXPR)
+
+
+State 86
+
+   33 ADD_EXPR: ADD_EXPR . T_ADD MULT_EXPR
+   34         | ADD_EXPR . T_SUB MULT_EXPR
+   35 SHIFT_EXPR: ADD_EXPR .
+
+    T_ADD  shift, and go to state 169
+    T_SUB  shift, and go to state 170
+
+    $default  reduce using rule 35 (SHIFT_EXPR)
+
+
+State 87
+
+   36 SHIFT_EXPR: SHIFT_EXPR . T_SHIFTLEFT ADD_EXPR
+   37           | SHIFT_EXPR . T_SHIFTRIGHT ADD_EXPR
+   38 COMPARISON_EXPR: SHIFT_EXPR .
+
+    T_SHIFTRIGHT  shift, and go to state 171
+    T_SHIFTLEFT   shift, and go to state 172
+
+    $default  reduce using rule 38 (COMPARISON_EXPR)
+
+
+State 88
+
+   39 COMPARISON_EXPR: COMPARISON_EXPR . T_LESSTHAN SHIFT_EXPR
+   40                | COMPARISON_EXPR . T_GREATERTHAN SHIFT_EXPR
+   41                | COMPARISON_EXPR . T_LESSTHANEQUAL SHIFT_EXPR
+   42                | COMPARISON_EXPR . T_GREATERTHANEQUAL SHIFT_EXPR
+   43 EQUAL_EXPR: COMPARISON_EXPR .
+
+    T_LESSTHAN          shift, and go to state 173
+    T_GREATERTHAN       shift, and go to state 174
+    T_GREATERTHANEQUAL  shift, and go to state 175
+    T_LESSTHANEQUAL     shift, and go to state 176
+
+    $default  reduce using rule 43 (EQUAL_EXPR)
+
+
+State 89
+
+   44 EQUAL_EXPR: EQUAL_EXPR . T_EQUAL COMPARISON_EXPR
+   45           | EQUAL_EXPR . T_NOTEQUAL COMPARISON_EXPR
+   46 AND_EXPR: EQUAL_EXPR .
+
+    T_EQUAL     shift, and go to state 177
+    T_NOTEQUAL  shift, and go to state 178
+
+    $default  reduce using rule 46 (AND_EXPR)
+
+
+State 90
+
+   47 AND_EXPR: AND_EXPR . T_AND EQUAL_EXPR
+   48 XOR_EXPR: AND_EXPR .
+
+    T_AND  shift, and go to state 179
+
+    $default  reduce using rule 48 (XOR_EXPR)
+
+
+State 91
+
+   49 XOR_EXPR: XOR_EXPR . T_XOR AND_EXPR
+   50 INCLUSIVE_OR_EXPR: XOR_EXPR .
+
+    T_XOR  shift, and go to state 180
+
+    $default  reduce using rule 50 (INCLUSIVE_OR_EXPR)
+
+
+State 92
+
+   51 INCLUSIVE_OR_EXPR: INCLUSIVE_OR_EXPR . T_OR AND_EXPR
+   52 LOGIC_AND_EXPR: INCLUSIVE_OR_EXPR .
+
+    T_OR  shift, and go to state 181
+
+    $default  reduce using rule 52 (LOGIC_AND_EXPR)
+
+
+State 93
+
+   53 LOGIC_AND_EXPR: LOGIC_AND_EXPR . T_AND_OP INCLUSIVE_OR_EXPR
+   54 LOGIC_OR_EXPR: LOGIC_AND_EXPR .
+
+    T_AND_OP  shift, and go to state 182
+
+    $default  reduce using rule 54 (LOGIC_OR_EXPR)
+
+
+State 94
+
+   55 LOGIC_OR_EXPR: LOGIC_OR_EXPR . T_OR_OP LOGIC_AND_EXPR
+   56 CONDITION_EXPR: LOGIC_OR_EXPR .
+   57               | LOGIC_OR_EXPR . T_QUESTION EXPR T_COLON CONDITION_EXPR
+
+    T_OR_OP     shift, and go to state 183
+    T_QUESTION  shift, and go to state 184
+
+    $default  reduce using rule 56 (CONDITION_EXPR)
+
+
+State 95
+
+   69 ASSIGN_EXPR: CONDITION_EXPR .
+
+    $default  reduce using rule 69 (ASSIGN_EXPR)
+
+
+State 96
+
+   71 EXPR: ASSIGN_EXPR .
+
+    $default  reduce using rule 71 (EXPR)
+
+
+State 97
+
+   72 EXPR: EXPR . T_COMMA ASSIGN_EXPR
+  142 EXPR_STATEMENT: EXPR . T_SEMICOLON
+
+    T_SEMICOLON  shift, and go to state 185
+    T_COMMA      shift, and go to state 186
+
+
+State 98
+
+  139 STATEMENT_LIST: STATEMENT .
+
+    $default  reduce using rule 139 (STATEMENT_LIST)
+
+
+State 99
+
+  124 STATEMENT: LABELED_STATEMENT .
+
+    $default  reduce using rule 124 (STATEMENT)
+
+
+State 100
+
+  125 STATEMENT: COMPOUND_STATEMENT .
+
+    $default  reduce using rule 125 (STATEMENT)
+
+
+State 101
+
+  135 COMPOUND_STATEMENT: T_LCURLY DECLARATION_LIST . T_RCURLY
+  136                   | T_LCURLY DECLARATION_LIST . STATEMENT_LIST T_RCURLY
+  138 DECLARATION_LIST: DECLARATION_LIST . DECLARATION
+
+    T_WHILE      shift, and go to state 54
+    T_FOR        shift, and go to state 55
+    T_IF         shift, and go to state 56
+    T_INT        shift, and go to state 1
+    T_VOID       shift, and go to state 2
+    T_ENUM       shift, and go to state 3
+    T_RETURN     shift, and go to state 57
+    T_BREAK      shift, and go to state 58
+    T_CONTINUE   shift, and go to state 59
+    T_SWITCH     shift, and go to state 60
+    T_CASE       shift, and go to state 61
+    T_DEFAULT    shift, and go to state 62
+    GOTO         shift, and go to state 63
+    T_DO         shift, and go to state 64
+    T_AND        shift, and go to state 65
+    T_NOT        shift, and go to state 66
+    T_INVERT     shift, and go to state 67
+    T_CONST      shift, and go to state 4
+    T_VOLATILE   shift, and go to state 5
+    T_MULTIPLY   shift, and go to state 68
+    T_ADD        shift, and go to state 69
+    T_SUB        shift, and go to state 70
+    INC_OP       shift, and go to state 71
+    DEC_OP       shift, and go to state 72
+    T_EXTERN     shift, and go to state 6
+    T_TYPEDEF    shift, and go to state 7
+    T_STATIC     shift, and go to state 8
+    T_LBRACKET   shift, and go to state 73
+    T_LCURLY     shift, and go to state 36
+    T_RCURLY     shift, and go to state 187
+    T_SEMICOLON  shift, and go to state 75
+    T_UNSIGNED   shift, and go to state 10
+    T_CHAR       shift, and go to state 11
+    T_SIZEOF     shift, and go to state 76
+    T_FLOAT      shift, and go to state 12
+    T_DOUBLE     shift, and go to state 13
+    T_NUM        shift, and go to state 77
+    T_VARIABLE   shift, and go to state 78
+    T_CHARVAL    shift, and go to state 79
+
+    PRIM_EXPR            go to state 80
+    POSTFIX_EXPR         go to state 81
+    UNARY_EXPR           go to state 82
+    UNARY_OP             go to state 83
+    CAST_EXPR            go to state 84
+    MULT_EXPR            go to state 85
+    ADD_EXPR             go to state 86
+    SHIFT_EXPR           go to state 87
+    COMPARISON_EXPR      go to state 88
+    EQUAL_EXPR           go to state 89
+    AND_EXPR             go to state 90
+    XOR_EXPR             go to state 91
+    INCLUSIVE_OR_EXPR    go to state 92
+    LOGIC_AND_EXPR       go to state 93
+    LOGIC_OR_EXPR        go to state 94
+    CONDITION_EXPR       go to state 95
+    ASSIGN_EXPR          go to state 96
+    EXPR                 go to state 97
+    DECLARATION          go to state 108
+    DECLARATION_SPE      go to state 38
+    STORAGE_CLASS_SPE    go to state 17
+    TYPE_SPE             go to state 18
+    ENUM_SPECIFIER       go to state 19
+    TYPE_QUALIFIER       go to state 20
+    STATEMENT            go to state 98
+    LABELED_STATEMENT    go to state 99
+    COMPOUND_STATEMENT   go to state 100
+    STATEMENT_LIST       go to state 188
+    EXPR_STATEMENT       go to state 103
+    SELECT_STATEMENT     go to state 104
+    ITERATION_STATEMENT  go to state 105
+    JUMP_STATEMENT       go to state 106
+
+
+State 102
+
+  134 COMPOUND_STATEMENT: T_LCURLY STATEMENT_LIST . T_RCURLY
+  140 STATEMENT_LIST: STATEMENT_LIST . STATEMENT
+
+    T_WHILE      shift, and go to state 54
+    T_FOR        shift, and go to state 55
+    T_IF         shift, and go to state 56
+    T_RETURN     shift, and go to state 57
+    T_BREAK      shift, and go to state 58
+    T_CONTINUE   shift, and go to state 59
+    T_SWITCH     shift, and go to state 60
+    T_CASE       shift, and go to state 61
+    T_DEFAULT    shift, and go to state 62
+    GOTO         shift, and go to state 63
+    T_DO         shift, and go to state 64
+    T_AND        shift, and go to state 65
+    T_NOT        shift, and go to state 66
+    T_INVERT     shift, and go to state 67
+    T_MULTIPLY   shift, and go to state 68
+    T_ADD        shift, and go to state 69
+    T_SUB        shift, and go to state 70
+    INC_OP       shift, and go to state 71
+    DEC_OP       shift, and go to state 72
+    T_LBRACKET   shift, and go to state 73
+    T_LCURLY     shift, and go to state 36
+    T_RCURLY     shift, and go to state 189
+    T_SEMICOLON  shift, and go to state 75
+    T_SIZEOF     shift, and go to state 76
+    T_NUM        shift, and go to state 77
+    T_VARIABLE   shift, and go to state 78
+    T_CHARVAL    shift, and go to state 79
+
+    PRIM_EXPR            go to state 80
+    POSTFIX_EXPR         go to state 81
+    UNARY_EXPR           go to state 82
+    UNARY_OP             go to state 83
+    CAST_EXPR            go to state 84
+    MULT_EXPR            go to state 85
+    ADD_EXPR             go to state 86
+    SHIFT_EXPR           go to state 87
+    COMPARISON_EXPR      go to state 88
+    EQUAL_EXPR           go to state 89
+    AND_EXPR             go to state 90
+    XOR_EXPR             go to state 91
+    INCLUSIVE_OR_EXPR    go to state 92
+    LOGIC_AND_EXPR       go to state 93
+    LOGIC_OR_EXPR        go to state 94
+    CONDITION_EXPR       go to state 95
+    ASSIGN_EXPR          go to state 96
+    EXPR                 go to state 97
+    STATEMENT            go to state 190
+    LABELED_STATEMENT    go to state 99
+    COMPOUND_STATEMENT   go to state 100
+    EXPR_STATEMENT       go to state 103
+    SELECT_STATEMENT     go to state 104
+    ITERATION_STATEMENT  go to state 105
+    JUMP_STATEMENT       go to state 106
+
+
+State 103
+
+  126 STATEMENT: EXPR_STATEMENT .
+
+    $default  reduce using rule 126 (STATEMENT)
+
+
+State 104
+
+  127 STATEMENT: SELECT_STATEMENT .
+
+    $default  reduce using rule 127 (STATEMENT)
+
+
+State 105
+
+  128 STATEMENT: ITERATION_STATEMENT .
+
+    $default  reduce using rule 128 (STATEMENT)
+
+
+State 106
+
+  129 STATEMENT: JUMP_STATEMENT .
+
+    $default  reduce using rule 129 (STATEMENT)
+
+
+State 107
+
+   82 INITIALISE_DECLARATOR: DECLARATOR .
+   83                      | DECLARATOR . T_ASSIGN VARIABLE_STORE
+
+    T_ASSIGN  shift, and go to state 51
+
+    $default  reduce using rule 82 (INITIALISE_DECLARATOR)
+
+
+State 108
+
+  138 DECLARATION_LIST: DECLARATION_LIST DECLARATION .
+
+    $default  reduce using rule 138 (DECLARATION_LIST)
+
+
+State 109
+
+  162 FUNCT_DEF: DECLARATOR DECLARATION_LIST COMPOUND_STATEMENT .
+
+    $default  reduce using rule 162 (FUNCT_DEF)
+
+
+State 110
+
+  110 DIRECT_DECL: DIRECT_DECL T_LBRACKET T_RBRACKET .
+
+    $default  reduce using rule 110 (DIRECT_DECL)
+
+
+State 111
+
+  117 T_VARIABLE_LIST: T_VARIABLE .
+
+    $default  reduce using rule 117 (T_VARIABLE_LIST)
+
+
+State 112
+
+  115 PARAM_DECLARATION: DECLARATION_SPE . DECLARATOR
+  116                  | DECLARATION_SPE .
+
+    T_LBRACKET  shift, and go to state 9
+    T_VARIABLE  shift, and go to state 14
+
+    $default  reduce using rule 116 (PARAM_DECLARATION)
+
+    DECLARATOR   go to state 191
+    DIRECT_DECL  go to state 22
+
+
+State 113
+
+  108 DIRECT_DECL: DIRECT_DECL T_LBRACKET PARAM_TYPE_LIST . T_RBRACKET
+
+    T_RBRACKET  shift, and go to state 192
+
+
+State 114
+
+  111 PARAM_TYPE_LIST: PARAM_LIST .
+  112                | PARAM_LIST . T_COMMA T_ELLIPSIS
+  114 PARAM_LIST: PARAM_LIST . T_COMMA PARAM_DECLARATION
+
+    T_COMMA  shift, and go to state 193
+
+    $default  reduce using rule 111 (PARAM_TYPE_LIST)
+
+
+State 115
+
+  113 PARAM_LIST: PARAM_DECLARATION .
+
+    $default  reduce using rule 113 (PARAM_LIST)
+
+
+State 116
+
+  109 DIRECT_DECL: DIRECT_DECL T_LBRACKET T_VARIABLE_LIST . T_RBRACKET
+  118 T_VARIABLE_LIST: T_VARIABLE_LIST . T_COMMA T_VARIABLE
+
+    T_RBRACKET  shift, and go to state 194
+    T_COMMA     shift, and go to state 195
+
+
+State 117
+
+  107 DIRECT_DECL: DIRECT_DECL L_SQRBRACKET R_SQRBRACKET .
+
+    $default  reduce using rule 107 (DIRECT_DECL)
+
+
+State 118
+
+    1 PRIM_EXPR: T_VARIABLE .
+
+    $default  reduce using rule 1 (PRIM_EXPR)
+
+
+State 119
+
+   10 POSTFIX_EXPR: UNARY_EXPR . INC_OP
+   11             | UNARY_EXPR . DEC_OP
+   27 CAST_EXPR: UNARY_EXPR .
+
+    INC_OP  shift, and go to state 162
+    DEC_OP  shift, and go to state 163
+
+    INC_OP    [reduce using rule 27 (CAST_EXPR)]
+    DEC_OP    [reduce using rule 27 (CAST_EXPR)]
+    $default  reduce using rule 27 (CAST_EXPR)
+
+
+State 120
+
+   73 CONST_EXPR: CONDITION_EXPR .
+
+    $default  reduce using rule 73 (CONST_EXPR)
+
+
+State 121
+
+  106 DIRECT_DECL: DIRECT_DECL L_SQRBRACKET CONST_EXPR . R_SQRBRACKET
+
+    R_SQRBRACKET  shift, and go to state 196
+
+
+State 122
+
+  100 ENUMERATOR: T_VARIABLE T_ASSIGN . CONST_EXPR
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR          go to state 80
+    POSTFIX_EXPR       go to state 81
+    UNARY_EXPR         go to state 119
+    UNARY_OP           go to state 83
+    CAST_EXPR          go to state 84
+    MULT_EXPR          go to state 85
+    ADD_EXPR           go to state 86
+    SHIFT_EXPR         go to state 87
+    COMPARISON_EXPR    go to state 88
+    EQUAL_EXPR         go to state 89
+    AND_EXPR           go to state 90
+    XOR_EXPR           go to state 91
+    INCLUSIVE_OR_EXPR  go to state 92
+    LOGIC_AND_EXPR     go to state 93
+    LOGIC_OR_EXPR      go to state 94
+    CONDITION_EXPR     go to state 120
+    CONST_EXPR         go to state 197
+
+
+State 123
+
+   94 ENUM_SPECIFIER: T_ENUM T_LCURLY ENUM_LIST T_RCURLY .
+
+    $default  reduce using rule 94 (ENUM_SPECIFIER)
+
+
+State 124
+
+   98 ENUM_LIST: ENUM_LIST T_COMMA . ENUMERATOR
+
+    T_VARIABLE  shift, and go to state 45
+
+    ENUMERATOR  go to state 198
+
+
+State 125
+
+   95 ENUM_SPECIFIER: T_ENUM T_VARIABLE T_LCURLY ENUM_LIST . T_RCURLY
+   98 ENUM_LIST: ENUM_LIST . T_COMMA ENUMERATOR
+
+    T_RCURLY  shift, and go to state 199
+    T_COMMA   shift, and go to state 124
+
+
+State 126
+
+  120 VARIABLE_STORE: T_LCURLY . VARIABLE_STORE_LIST T_RCURLY
+  121               | T_LCURLY . VARIABLE_STORE_LIST T_COMMA T_RCURLY
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_LCURLY    shift, and go to state 126
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR            go to state 80
+    POSTFIX_EXPR         go to state 81
+    UNARY_EXPR           go to state 82
+    UNARY_OP             go to state 83
+    CAST_EXPR            go to state 84
+    MULT_EXPR            go to state 85
+    ADD_EXPR             go to state 86
+    SHIFT_EXPR           go to state 87
+    COMPARISON_EXPR      go to state 88
+    EQUAL_EXPR           go to state 89
+    AND_EXPR             go to state 90
+    XOR_EXPR             go to state 91
+    INCLUSIVE_OR_EXPR    go to state 92
+    LOGIC_AND_EXPR       go to state 93
+    LOGIC_OR_EXPR        go to state 94
+    CONDITION_EXPR       go to state 95
+    ASSIGN_EXPR          go to state 127
+    VARIABLE_STORE       go to state 200
+    VARIABLE_STORE_LIST  go to state 201
+
+
+State 127
+
+  119 VARIABLE_STORE: ASSIGN_EXPR .
+
+    $default  reduce using rule 119 (VARIABLE_STORE)
+
+
+State 128
+
+   83 INITIALISE_DECLARATOR: DECLARATOR T_ASSIGN VARIABLE_STORE .
+
+    $default  reduce using rule 83 (INITIALISE_DECLARATOR)
+
+
+State 129
+
+  160 FUNCT_DEF: DECLARATION_SPE DECLARATOR DECLARATION_LIST COMPOUND_STATEMENT .
+
+    $default  reduce using rule 160 (FUNCT_DEF)
+
+
+State 130
+
+  146 ITERATION_STATEMENT: T_WHILE T_LBRACKET . EXPR T_RBRACKET STATEMENT
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR          go to state 80
+    POSTFIX_EXPR       go to state 81
+    UNARY_EXPR         go to state 82
+    UNARY_OP           go to state 83
+    CAST_EXPR          go to state 84
+    MULT_EXPR          go to state 85
+    ADD_EXPR           go to state 86
+    SHIFT_EXPR         go to state 87
+    COMPARISON_EXPR    go to state 88
+    EQUAL_EXPR         go to state 89
+    AND_EXPR           go to state 90
+    XOR_EXPR           go to state 91
+    INCLUSIVE_OR_EXPR  go to state 92
+    LOGIC_AND_EXPR     go to state 93
+    LOGIC_OR_EXPR      go to state 94
+    CONDITION_EXPR     go to state 95
+    ASSIGN_EXPR        go to state 96
+    EXPR               go to state 202
+
+
+State 131
+
+  148 ITERATION_STATEMENT: T_FOR T_LBRACKET . EXPR_STATEMENT EXPR_STATEMENT T_RBRACKET STATEMENT
+  149                    | T_FOR T_LBRACKET . EXPR_STATEMENT EXPR_STATEMENT EXPR T_RBRACKET STATEMENT
+  150                    | T_FOR T_LBRACKET . DECLARATION EXPR_STATEMENT EXPR T_RBRACKET STATEMENT
+
+    T_INT        shift, and go to state 1
+    T_VOID       shift, and go to state 2
+    T_ENUM       shift, and go to state 3
+    T_AND        shift, and go to state 65
+    T_NOT        shift, and go to state 66
+    T_INVERT     shift, and go to state 67
+    T_CONST      shift, and go to state 4
+    T_VOLATILE   shift, and go to state 5
+    T_MULTIPLY   shift, and go to state 68
+    T_ADD        shift, and go to state 69
+    T_SUB        shift, and go to state 70
+    INC_OP       shift, and go to state 71
+    DEC_OP       shift, and go to state 72
+    T_EXTERN     shift, and go to state 6
+    T_TYPEDEF    shift, and go to state 7
+    T_STATIC     shift, and go to state 8
+    T_LBRACKET   shift, and go to state 73
+    T_SEMICOLON  shift, and go to state 75
+    T_UNSIGNED   shift, and go to state 10
+    T_CHAR       shift, and go to state 11
+    T_SIZEOF     shift, and go to state 76
+    T_FLOAT      shift, and go to state 12
+    T_DOUBLE     shift, and go to state 13
+    T_NUM        shift, and go to state 77
+    T_VARIABLE   shift, and go to state 118
+    T_CHARVAL    shift, and go to state 79
+
+    PRIM_EXPR          go to state 80
+    POSTFIX_EXPR       go to state 81
+    UNARY_EXPR         go to state 82
+    UNARY_OP           go to state 83
+    CAST_EXPR          go to state 84
+    MULT_EXPR          go to state 85
+    ADD_EXPR           go to state 86
+    SHIFT_EXPR         go to state 87
+    COMPARISON_EXPR    go to state 88
+    EQUAL_EXPR         go to state 89
+    AND_EXPR           go to state 90
+    XOR_EXPR           go to state 91
+    INCLUSIVE_OR_EXPR  go to state 92
+    LOGIC_AND_EXPR     go to state 93
+    LOGIC_OR_EXPR      go to state 94
+    CONDITION_EXPR     go to state 95
+    ASSIGN_EXPR        go to state 96
+    EXPR               go to state 97
+    DECLARATION        go to state 203
+    DECLARATION_SPE    go to state 38
+    STORAGE_CLASS_SPE  go to state 17
+    TYPE_SPE           go to state 18
+    ENUM_SPECIFIER     go to state 19
+    TYPE_QUALIFIER     go to state 20
+    EXPR_STATEMENT     go to state 204
+
+
+State 132
+
+  143 SELECT_STATEMENT: T_IF T_LBRACKET . EXPR T_RBRACKET STATEMENT
+  144                 | T_IF T_LBRACKET . EXPR T_RBRACKET STATEMENT T_ELSE STATEMENT
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR          go to state 80
+    POSTFIX_EXPR       go to state 81
+    UNARY_EXPR         go to state 82
+    UNARY_OP           go to state 83
+    CAST_EXPR          go to state 84
+    MULT_EXPR          go to state 85
+    ADD_EXPR           go to state 86
+    SHIFT_EXPR         go to state 87
+    COMPARISON_EXPR    go to state 88
+    EQUAL_EXPR         go to state 89
+    AND_EXPR           go to state 90
+    XOR_EXPR           go to state 91
+    INCLUSIVE_OR_EXPR  go to state 92
+    LOGIC_AND_EXPR     go to state 93
+    LOGIC_OR_EXPR      go to state 94
+    CONDITION_EXPR     go to state 95
+    ASSIGN_EXPR        go to state 96
+    EXPR               go to state 205
+
+
+State 133
+
+  154 JUMP_STATEMENT: T_RETURN T_SEMICOLON .
+
+    $default  reduce using rule 154 (JUMP_STATEMENT)
+
+
+State 134
+
+   72 EXPR: EXPR . T_COMMA ASSIGN_EXPR
+  155 JUMP_STATEMENT: T_RETURN EXPR . T_SEMICOLON
+
+    T_SEMICOLON  shift, and go to state 206
+    T_COMMA      shift, and go to state 186
+
+
+State 135
+
+  153 JUMP_STATEMENT: T_BREAK T_SEMICOLON .
+
+    $default  reduce using rule 153 (JUMP_STATEMENT)
+
+
+State 136
+
+  152 JUMP_STATEMENT: T_CONTINUE T_SEMICOLON .
+
+    $default  reduce using rule 152 (JUMP_STATEMENT)
+
+
+State 137
+
+  145 SELECT_STATEMENT: T_SWITCH T_LBRACKET . EXPR T_RBRACKET STATEMENT
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR          go to state 80
+    POSTFIX_EXPR       go to state 81
+    UNARY_EXPR         go to state 82
+    UNARY_OP           go to state 83
+    CAST_EXPR          go to state 84
+    MULT_EXPR          go to state 85
+    ADD_EXPR           go to state 86
+    SHIFT_EXPR         go to state 87
+    COMPARISON_EXPR    go to state 88
+    EQUAL_EXPR         go to state 89
+    AND_EXPR           go to state 90
+    XOR_EXPR           go to state 91
+    INCLUSIVE_OR_EXPR  go to state 92
+    LOGIC_AND_EXPR     go to state 93
+    LOGIC_OR_EXPR      go to state 94
+    CONDITION_EXPR     go to state 95
+    ASSIGN_EXPR        go to state 96
+    EXPR               go to state 207
+
+
+State 138
+
+  131 LABELED_STATEMENT: T_CASE CONST_EXPR . T_COLON STATEMENT
+
+    T_COLON  shift, and go to state 208
+
+
+State 139
+
+  132 LABELED_STATEMENT: T_DEFAULT T_COLON . STATEMENT
+
+    T_WHILE      shift, and go to state 54
+    T_FOR        shift, and go to state 55
+    T_IF         shift, and go to state 56
+    T_RETURN     shift, and go to state 57
+    T_BREAK      shift, and go to state 58
+    T_CONTINUE   shift, and go to state 59
+    T_SWITCH     shift, and go to state 60
+    T_CASE       shift, and go to state 61
+    T_DEFAULT    shift, and go to state 62
+    GOTO         shift, and go to state 63
+    T_DO         shift, and go to state 64
+    T_AND        shift, and go to state 65
+    T_NOT        shift, and go to state 66
+    T_INVERT     shift, and go to state 67
+    T_MULTIPLY   shift, and go to state 68
+    T_ADD        shift, and go to state 69
+    T_SUB        shift, and go to state 70
+    INC_OP       shift, and go to state 71
+    DEC_OP       shift, and go to state 72
+    T_LBRACKET   shift, and go to state 73
+    T_LCURLY     shift, and go to state 36
+    T_SEMICOLON  shift, and go to state 75
+    T_SIZEOF     shift, and go to state 76
+    T_NUM        shift, and go to state 77
+    T_VARIABLE   shift, and go to state 78
+    T_CHARVAL    shift, and go to state 79
+
+    PRIM_EXPR            go to state 80
+    POSTFIX_EXPR         go to state 81
+    UNARY_EXPR           go to state 82
+    UNARY_OP             go to state 83
+    CAST_EXPR            go to state 84
+    MULT_EXPR            go to state 85
+    ADD_EXPR             go to state 86
+    SHIFT_EXPR           go to state 87
+    COMPARISON_EXPR      go to state 88
+    EQUAL_EXPR           go to state 89
+    AND_EXPR             go to state 90
+    XOR_EXPR             go to state 91
+    INCLUSIVE_OR_EXPR    go to state 92
+    LOGIC_AND_EXPR       go to state 93
+    LOGIC_OR_EXPR        go to state 94
+    CONDITION_EXPR       go to state 95
+    ASSIGN_EXPR          go to state 96
+    EXPR                 go to state 97
+    STATEMENT            go to state 209
+    LABELED_STATEMENT    go to state 99
+    COMPOUND_STATEMENT   go to state 100
+    EXPR_STATEMENT       go to state 103
+    SELECT_STATEMENT     go to state 104
+    ITERATION_STATEMENT  go to state 105
+    JUMP_STATEMENT       go to state 106
+
+
+State 140
+
+  151 JUMP_STATEMENT: GOTO T_VARIABLE . T_SEMICOLON
+
+    T_SEMICOLON  shift, and go to state 210
+
+
+State 141
+
+  147 ITERATION_STATEMENT: T_DO STATEMENT . T_WHILE T_RBRACKET EXPR T_LBRACKET T_SEMICOLON
+
+    T_WHILE  shift, and go to state 211
+
+
+State 142
+
+   10 POSTFIX_EXPR: UNARY_EXPR . INC_OP
+   11             | UNARY_EXPR . DEC_OP
+   16 UNARY_EXPR: INC_OP UNARY_EXPR .
+
+    INC_OP  shift, and go to state 162
+    DEC_OP  shift, and go to state 163
+
+    INC_OP    [reduce using rule 16 (UNARY_EXPR)]
+    DEC_OP    [reduce using rule 16 (UNARY_EXPR)]
+    $default  reduce using rule 16 (UNARY_EXPR)
+
+
+State 143
+
+   10 POSTFIX_EXPR: UNARY_EXPR . INC_OP
+   11             | UNARY_EXPR . DEC_OP
+   17 UNARY_EXPR: DEC_OP UNARY_EXPR .
+
+    INC_OP  shift, and go to state 162
+    DEC_OP  shift, and go to state 163
+
+    INC_OP    [reduce using rule 17 (UNARY_EXPR)]
+    DEC_OP    [reduce using rule 17 (UNARY_EXPR)]
+    $default  reduce using rule 17 (UNARY_EXPR)
+
+
+State 144
+
+    4 PRIM_EXPR: T_LBRACKET EXPR . T_RBRACKET
+   72 EXPR: EXPR . T_COMMA ASSIGN_EXPR
+
+    T_RBRACKET  shift, and go to state 212
+    T_COMMA     shift, and go to state 186
+
+
+State 145
+
+    4 PRIM_EXPR: T_LBRACKET . EXPR T_RBRACKET
+   19 UNARY_EXPR: T_SIZEOF T_LBRACKET . PRIM_EXPR T_RBRACKET
+   20           | T_SIZEOF T_LBRACKET . TYPE_SPE T_RBRACKET
+
+    T_INT       shift, and go to state 1
+    T_VOID      shift, and go to state 2
+    T_ENUM      shift, and go to state 3
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_UNSIGNED  shift, and go to state 10
+    T_CHAR      shift, and go to state 11
+    T_SIZEOF    shift, and go to state 76
+    T_FLOAT     shift, and go to state 12
+    T_DOUBLE    shift, and go to state 13
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR          go to state 213
+    POSTFIX_EXPR       go to state 81
+    UNARY_EXPR         go to state 82
+    UNARY_OP           go to state 83
+    CAST_EXPR          go to state 84
+    MULT_EXPR          go to state 85
+    ADD_EXPR           go to state 86
+    SHIFT_EXPR         go to state 87
+    COMPARISON_EXPR    go to state 88
+    EQUAL_EXPR         go to state 89
+    AND_EXPR           go to state 90
+    XOR_EXPR           go to state 91
+    INCLUSIVE_OR_EXPR  go to state 92
+    LOGIC_AND_EXPR     go to state 93
+    LOGIC_OR_EXPR      go to state 94
+    CONDITION_EXPR     go to state 95
+    ASSIGN_EXPR        go to state 96
+    EXPR               go to state 144
+    TYPE_SPE           go to state 214
+    ENUM_SPECIFIER     go to state 19
+
+
+State 146
+
+   10 POSTFIX_EXPR: UNARY_EXPR . INC_OP
+   11             | UNARY_EXPR . DEC_OP
+   18 UNARY_EXPR: T_SIZEOF UNARY_EXPR .
+
+    INC_OP  shift, and go to state 162
+    DEC_OP  shift, and go to state 163
+
+    INC_OP    [reduce using rule 18 (UNARY_EXPR)]
+    DEC_OP    [reduce using rule 18 (UNARY_EXPR)]
+    $default  reduce using rule 18 (UNARY_EXPR)
+
+
+State 147
+
+  130 LABELED_STATEMENT: T_VARIABLE T_COLON . STATEMENT
+
+    T_WHILE      shift, and go to state 54
+    T_FOR        shift, and go to state 55
+    T_IF         shift, and go to state 56
+    T_RETURN     shift, and go to state 57
+    T_BREAK      shift, and go to state 58
+    T_CONTINUE   shift, and go to state 59
+    T_SWITCH     shift, and go to state 60
+    T_CASE       shift, and go to state 61
+    T_DEFAULT    shift, and go to state 62
+    GOTO         shift, and go to state 63
+    T_DO         shift, and go to state 64
+    T_AND        shift, and go to state 65
+    T_NOT        shift, and go to state 66
+    T_INVERT     shift, and go to state 67
+    T_MULTIPLY   shift, and go to state 68
+    T_ADD        shift, and go to state 69
+    T_SUB        shift, and go to state 70
+    INC_OP       shift, and go to state 71
+    DEC_OP       shift, and go to state 72
+    T_LBRACKET   shift, and go to state 73
+    T_LCURLY     shift, and go to state 36
+    T_SEMICOLON  shift, and go to state 75
+    T_SIZEOF     shift, and go to state 76
+    T_NUM        shift, and go to state 77
+    T_VARIABLE   shift, and go to state 78
+    T_CHARVAL    shift, and go to state 79
+
+    PRIM_EXPR            go to state 80
+    POSTFIX_EXPR         go to state 81
+    UNARY_EXPR           go to state 82
+    UNARY_OP             go to state 83
+    CAST_EXPR            go to state 84
+    MULT_EXPR            go to state 85
+    ADD_EXPR             go to state 86
+    SHIFT_EXPR           go to state 87
+    COMPARISON_EXPR      go to state 88
+    EQUAL_EXPR           go to state 89
+    AND_EXPR             go to state 90
+    XOR_EXPR             go to state 91
+    INCLUSIVE_OR_EXPR    go to state 92
+    LOGIC_AND_EXPR       go to state 93
+    LOGIC_OR_EXPR        go to state 94
+    CONDITION_EXPR       go to state 95
+    ASSIGN_EXPR          go to state 96
+    EXPR                 go to state 97
+    STATEMENT            go to state 215
+    LABELED_STATEMENT    go to state 99
+    COMPOUND_STATEMENT   go to state 100
+    EXPR_STATEMENT       go to state 103
+    SELECT_STATEMENT     go to state 104
+    ITERATION_STATEMENT  go to state 105
+    JUMP_STATEMENT       go to state 106
+
+
+State 148
+
+    7 POSTFIX_EXPR: POSTFIX_EXPR T_LBRACKET . T_RBRACKET
+    8             | POSTFIX_EXPR T_LBRACKET . ARG_EXPR_LIST T_RBRACKET
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_RBRACKET  shift, and go to state 216
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR          go to state 80
+    POSTFIX_EXPR       go to state 81
+    ARG_EXPR_LIST      go to state 217
+    UNARY_EXPR         go to state 82
+    UNARY_OP           go to state 83
+    CAST_EXPR          go to state 84
+    MULT_EXPR          go to state 85
+    ADD_EXPR           go to state 86
+    SHIFT_EXPR         go to state 87
+    COMPARISON_EXPR    go to state 88
+    EQUAL_EXPR         go to state 89
+    AND_EXPR           go to state 90
+    XOR_EXPR           go to state 91
+    INCLUSIVE_OR_EXPR  go to state 92
+    LOGIC_AND_EXPR     go to state 93
+    LOGIC_OR_EXPR      go to state 94
+    CONDITION_EXPR     go to state 95
+    ASSIGN_EXPR        go to state 218
+
+
+State 149
+
+    6 POSTFIX_EXPR: POSTFIX_EXPR L_SQRBRACKET . EXPR R_SQRBRACKET
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR          go to state 80
+    POSTFIX_EXPR       go to state 81
+    UNARY_EXPR         go to state 82
+    UNARY_OP           go to state 83
+    CAST_EXPR          go to state 84
+    MULT_EXPR          go to state 85
+    ADD_EXPR           go to state 86
+    SHIFT_EXPR         go to state 87
+    COMPARISON_EXPR    go to state 88
+    EQUAL_EXPR         go to state 89
+    AND_EXPR           go to state 90
+    XOR_EXPR           go to state 91
+    INCLUSIVE_OR_EXPR  go to state 92
+    LOGIC_AND_EXPR     go to state 93
+    LOGIC_OR_EXPR      go to state 94
+    CONDITION_EXPR     go to state 95
+    ASSIGN_EXPR        go to state 96
+    EXPR               go to state 219
+
+
+State 150
+
+    9 POSTFIX_EXPR: POSTFIX_EXPR T_PERIOD . T_VARIABLE
+
+    T_VARIABLE  shift, and go to state 220
+
+
+State 151
+
+   59 ASSIGN_OP: T_ADDEQUAL .
+
+    $default  reduce using rule 59 (ASSIGN_OP)
+
+
+State 152
+
+   60 ASSIGN_OP: T_DIVIDEEQUAL .
+
+    $default  reduce using rule 60 (ASSIGN_OP)
+
+
+State 153
+
+   61 ASSIGN_OP: T_MODEQUAL .
+
+    $default  reduce using rule 61 (ASSIGN_OP)
+
+
+State 154
+
+   62 ASSIGN_OP: T_SUBEQUAL .
+
+    $default  reduce using rule 62 (ASSIGN_OP)
+
+
+State 155
+
+   63 ASSIGN_OP: T_MULTEQUAL .
+
+    $default  reduce using rule 63 (ASSIGN_OP)
+
+
+State 156
+
+   64 ASSIGN_OP: T_LEFTEQUAL .
+
+    $default  reduce using rule 64 (ASSIGN_OP)
+
+
+State 157
+
+   65 ASSIGN_OP: T_RIGHTEQUAL .
+
+    $default  reduce using rule 65 (ASSIGN_OP)
+
+
+State 158
+
+   66 ASSIGN_OP: T_ANDEQUAL .
+
+    $default  reduce using rule 66 (ASSIGN_OP)
+
+
+State 159
+
+   67 ASSIGN_OP: T_XOREQUAL .
+
+    $default  reduce using rule 67 (ASSIGN_OP)
+
+
+State 160
+
+   68 ASSIGN_OP: T_OREQUAL .
+
+    $default  reduce using rule 68 (ASSIGN_OP)
+
+
+State 161
+
+   58 ASSIGN_OP: T_ASSIGN .
+
+    $default  reduce using rule 58 (ASSIGN_OP)
+
+
+State 162
+
+   10 POSTFIX_EXPR: UNARY_EXPR INC_OP .
+
+    $default  reduce using rule 10 (POSTFIX_EXPR)
+
+
+State 163
+
+   11 POSTFIX_EXPR: UNARY_EXPR DEC_OP .
+
+    $default  reduce using rule 11 (POSTFIX_EXPR)
+
+
+State 164
+
+   70 ASSIGN_EXPR: UNARY_EXPR ASSIGN_OP . ASSIGN_EXPR
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR          go to state 80
+    POSTFIX_EXPR       go to state 81
+    UNARY_EXPR         go to state 82
+    UNARY_OP           go to state 83
+    CAST_EXPR          go to state 84
+    MULT_EXPR          go to state 85
+    ADD_EXPR           go to state 86
+    SHIFT_EXPR         go to state 87
+    COMPARISON_EXPR    go to state 88
+    EQUAL_EXPR         go to state 89
+    AND_EXPR           go to state 90
+    XOR_EXPR           go to state 91
+    INCLUSIVE_OR_EXPR  go to state 92
+    LOGIC_AND_EXPR     go to state 93
+    LOGIC_OR_EXPR      go to state 94
+    CONDITION_EXPR     go to state 95
+    ASSIGN_EXPR        go to state 221
+
+
+State 165
+
+   15 UNARY_EXPR: UNARY_OP CAST_EXPR .
+
+    $default  reduce using rule 15 (UNARY_EXPR)
+
+
+State 166
+
+   31 MULT_EXPR: MULT_EXPR T_MODULO . CAST_EXPR
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR     go to state 80
+    POSTFIX_EXPR  go to state 81
+    UNARY_EXPR    go to state 119
+    UNARY_OP      go to state 83
+    CAST_EXPR     go to state 222
+
+
+State 167
+
+   29 MULT_EXPR: MULT_EXPR T_MULTIPLY . CAST_EXPR
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR     go to state 80
+    POSTFIX_EXPR  go to state 81
+    UNARY_EXPR    go to state 119
+    UNARY_OP      go to state 83
+    CAST_EXPR     go to state 223
+
+
+State 168
+
+   30 MULT_EXPR: MULT_EXPR T_DIV . CAST_EXPR
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR     go to state 80
+    POSTFIX_EXPR  go to state 81
+    UNARY_EXPR    go to state 119
+    UNARY_OP      go to state 83
+    CAST_EXPR     go to state 224
+
+
+State 169
+
+   33 ADD_EXPR: ADD_EXPR T_ADD . MULT_EXPR
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR     go to state 80
+    POSTFIX_EXPR  go to state 81
+    UNARY_EXPR    go to state 119
+    UNARY_OP      go to state 83
+    CAST_EXPR     go to state 84
+    MULT_EXPR     go to state 225
+
+
+State 170
+
+   34 ADD_EXPR: ADD_EXPR T_SUB . MULT_EXPR
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR     go to state 80
+    POSTFIX_EXPR  go to state 81
+    UNARY_EXPR    go to state 119
+    UNARY_OP      go to state 83
+    CAST_EXPR     go to state 84
+    MULT_EXPR     go to state 226
+
+
+State 171
+
+   37 SHIFT_EXPR: SHIFT_EXPR T_SHIFTRIGHT . ADD_EXPR
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR     go to state 80
+    POSTFIX_EXPR  go to state 81
+    UNARY_EXPR    go to state 119
+    UNARY_OP      go to state 83
+    CAST_EXPR     go to state 84
+    MULT_EXPR     go to state 85
+    ADD_EXPR      go to state 227
+
+
+State 172
+
+   36 SHIFT_EXPR: SHIFT_EXPR T_SHIFTLEFT . ADD_EXPR
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR     go to state 80
+    POSTFIX_EXPR  go to state 81
+    UNARY_EXPR    go to state 119
+    UNARY_OP      go to state 83
+    CAST_EXPR     go to state 84
+    MULT_EXPR     go to state 85
+    ADD_EXPR      go to state 228
+
+
+State 173
+
+   39 COMPARISON_EXPR: COMPARISON_EXPR T_LESSTHAN . SHIFT_EXPR
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR     go to state 80
+    POSTFIX_EXPR  go to state 81
+    UNARY_EXPR    go to state 119
+    UNARY_OP      go to state 83
+    CAST_EXPR     go to state 84
+    MULT_EXPR     go to state 85
+    ADD_EXPR      go to state 86
+    SHIFT_EXPR    go to state 229
+
+
+State 174
+
+   40 COMPARISON_EXPR: COMPARISON_EXPR T_GREATERTHAN . SHIFT_EXPR
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR     go to state 80
+    POSTFIX_EXPR  go to state 81
+    UNARY_EXPR    go to state 119
+    UNARY_OP      go to state 83
+    CAST_EXPR     go to state 84
+    MULT_EXPR     go to state 85
+    ADD_EXPR      go to state 86
+    SHIFT_EXPR    go to state 230
+
+
+State 175
+
+   42 COMPARISON_EXPR: COMPARISON_EXPR T_GREATERTHANEQUAL . SHIFT_EXPR
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR     go to state 80
+    POSTFIX_EXPR  go to state 81
+    UNARY_EXPR    go to state 119
+    UNARY_OP      go to state 83
+    CAST_EXPR     go to state 84
+    MULT_EXPR     go to state 85
+    ADD_EXPR      go to state 86
+    SHIFT_EXPR    go to state 231
+
+
+State 176
+
+   41 COMPARISON_EXPR: COMPARISON_EXPR T_LESSTHANEQUAL . SHIFT_EXPR
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR     go to state 80
+    POSTFIX_EXPR  go to state 81
+    UNARY_EXPR    go to state 119
+    UNARY_OP      go to state 83
+    CAST_EXPR     go to state 84
+    MULT_EXPR     go to state 85
+    ADD_EXPR      go to state 86
+    SHIFT_EXPR    go to state 232
+
+
+State 177
+
+   44 EQUAL_EXPR: EQUAL_EXPR T_EQUAL . COMPARISON_EXPR
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR        go to state 80
+    POSTFIX_EXPR     go to state 81
+    UNARY_EXPR       go to state 119
+    UNARY_OP         go to state 83
+    CAST_EXPR        go to state 84
+    MULT_EXPR        go to state 85
+    ADD_EXPR         go to state 86
+    SHIFT_EXPR       go to state 87
+    COMPARISON_EXPR  go to state 233
+
+
+State 178
+
+   45 EQUAL_EXPR: EQUAL_EXPR T_NOTEQUAL . COMPARISON_EXPR
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR        go to state 80
+    POSTFIX_EXPR     go to state 81
+    UNARY_EXPR       go to state 119
+    UNARY_OP         go to state 83
+    CAST_EXPR        go to state 84
+    MULT_EXPR        go to state 85
+    ADD_EXPR         go to state 86
+    SHIFT_EXPR       go to state 87
+    COMPARISON_EXPR  go to state 234
+
+
+State 179
+
+   47 AND_EXPR: AND_EXPR T_AND . EQUAL_EXPR
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR        go to state 80
+    POSTFIX_EXPR     go to state 81
+    UNARY_EXPR       go to state 119
+    UNARY_OP         go to state 83
+    CAST_EXPR        go to state 84
+    MULT_EXPR        go to state 85
+    ADD_EXPR         go to state 86
+    SHIFT_EXPR       go to state 87
+    COMPARISON_EXPR  go to state 88
+    EQUAL_EXPR       go to state 235
+
+
+State 180
+
+   49 XOR_EXPR: XOR_EXPR T_XOR . AND_EXPR
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR        go to state 80
+    POSTFIX_EXPR     go to state 81
+    UNARY_EXPR       go to state 119
+    UNARY_OP         go to state 83
+    CAST_EXPR        go to state 84
+    MULT_EXPR        go to state 85
+    ADD_EXPR         go to state 86
+    SHIFT_EXPR       go to state 87
+    COMPARISON_EXPR  go to state 88
+    EQUAL_EXPR       go to state 89
+    AND_EXPR         go to state 236
+
+
+State 181
+
+   51 INCLUSIVE_OR_EXPR: INCLUSIVE_OR_EXPR T_OR . AND_EXPR
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR        go to state 80
+    POSTFIX_EXPR     go to state 81
+    UNARY_EXPR       go to state 119
+    UNARY_OP         go to state 83
+    CAST_EXPR        go to state 84
+    MULT_EXPR        go to state 85
+    ADD_EXPR         go to state 86
+    SHIFT_EXPR       go to state 87
+    COMPARISON_EXPR  go to state 88
+    EQUAL_EXPR       go to state 89
+    AND_EXPR         go to state 237
+
+
+State 182
+
+   53 LOGIC_AND_EXPR: LOGIC_AND_EXPR T_AND_OP . INCLUSIVE_OR_EXPR
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR          go to state 80
+    POSTFIX_EXPR       go to state 81
+    UNARY_EXPR         go to state 119
+    UNARY_OP           go to state 83
+    CAST_EXPR          go to state 84
+    MULT_EXPR          go to state 85
+    ADD_EXPR           go to state 86
+    SHIFT_EXPR         go to state 87
+    COMPARISON_EXPR    go to state 88
+    EQUAL_EXPR         go to state 89
+    AND_EXPR           go to state 90
+    XOR_EXPR           go to state 91
+    INCLUSIVE_OR_EXPR  go to state 238
+
+
+State 183
+
+   55 LOGIC_OR_EXPR: LOGIC_OR_EXPR T_OR_OP . LOGIC_AND_EXPR
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR          go to state 80
+    POSTFIX_EXPR       go to state 81
+    UNARY_EXPR         go to state 119
+    UNARY_OP           go to state 83
+    CAST_EXPR          go to state 84
+    MULT_EXPR          go to state 85
+    ADD_EXPR           go to state 86
+    SHIFT_EXPR         go to state 87
+    COMPARISON_EXPR    go to state 88
+    EQUAL_EXPR         go to state 89
+    AND_EXPR           go to state 90
+    XOR_EXPR           go to state 91
+    INCLUSIVE_OR_EXPR  go to state 92
+    LOGIC_AND_EXPR     go to state 239
+
+
+State 184
+
+   57 CONDITION_EXPR: LOGIC_OR_EXPR T_QUESTION . EXPR T_COLON CONDITION_EXPR
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR          go to state 80
+    POSTFIX_EXPR       go to state 81
+    UNARY_EXPR         go to state 82
+    UNARY_OP           go to state 83
+    CAST_EXPR          go to state 84
+    MULT_EXPR          go to state 85
+    ADD_EXPR           go to state 86
+    SHIFT_EXPR         go to state 87
+    COMPARISON_EXPR    go to state 88
+    EQUAL_EXPR         go to state 89
+    AND_EXPR           go to state 90
+    XOR_EXPR           go to state 91
+    INCLUSIVE_OR_EXPR  go to state 92
+    LOGIC_AND_EXPR     go to state 93
+    LOGIC_OR_EXPR      go to state 94
+    CONDITION_EXPR     go to state 95
+    ASSIGN_EXPR        go to state 96
+    EXPR               go to state 240
+
+
+State 185
+
+  142 EXPR_STATEMENT: EXPR T_SEMICOLON .
+
+    $default  reduce using rule 142 (EXPR_STATEMENT)
+
+
+State 186
+
+   72 EXPR: EXPR T_COMMA . ASSIGN_EXPR
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR          go to state 80
+    POSTFIX_EXPR       go to state 81
+    UNARY_EXPR         go to state 82
+    UNARY_OP           go to state 83
+    CAST_EXPR          go to state 84
+    MULT_EXPR          go to state 85
+    ADD_EXPR           go to state 86
+    SHIFT_EXPR         go to state 87
+    COMPARISON_EXPR    go to state 88
+    EQUAL_EXPR         go to state 89
+    AND_EXPR           go to state 90
+    XOR_EXPR           go to state 91
+    INCLUSIVE_OR_EXPR  go to state 92
+    LOGIC_AND_EXPR     go to state 93
+    LOGIC_OR_EXPR      go to state 94
+    CONDITION_EXPR     go to state 95
+    ASSIGN_EXPR        go to state 241
+
+
+State 187
+
+  135 COMPOUND_STATEMENT: T_LCURLY DECLARATION_LIST T_RCURLY .
+
+    $default  reduce using rule 135 (COMPOUND_STATEMENT)
+
+
+State 188
+
+  136 COMPOUND_STATEMENT: T_LCURLY DECLARATION_LIST STATEMENT_LIST . T_RCURLY
+  140 STATEMENT_LIST: STATEMENT_LIST . STATEMENT
+
+    T_WHILE      shift, and go to state 54
+    T_FOR        shift, and go to state 55
+    T_IF         shift, and go to state 56
+    T_RETURN     shift, and go to state 57
+    T_BREAK      shift, and go to state 58
+    T_CONTINUE   shift, and go to state 59
+    T_SWITCH     shift, and go to state 60
+    T_CASE       shift, and go to state 61
+    T_DEFAULT    shift, and go to state 62
+    GOTO         shift, and go to state 63
+    T_DO         shift, and go to state 64
+    T_AND        shift, and go to state 65
+    T_NOT        shift, and go to state 66
+    T_INVERT     shift, and go to state 67
+    T_MULTIPLY   shift, and go to state 68
+    T_ADD        shift, and go to state 69
+    T_SUB        shift, and go to state 70
+    INC_OP       shift, and go to state 71
+    DEC_OP       shift, and go to state 72
+    T_LBRACKET   shift, and go to state 73
+    T_LCURLY     shift, and go to state 36
+    T_RCURLY     shift, and go to state 242
+    T_SEMICOLON  shift, and go to state 75
+    T_SIZEOF     shift, and go to state 76
+    T_NUM        shift, and go to state 77
+    T_VARIABLE   shift, and go to state 78
+    T_CHARVAL    shift, and go to state 79
+
+    PRIM_EXPR            go to state 80
+    POSTFIX_EXPR         go to state 81
+    UNARY_EXPR           go to state 82
+    UNARY_OP             go to state 83
+    CAST_EXPR            go to state 84
+    MULT_EXPR            go to state 85
+    ADD_EXPR             go to state 86
+    SHIFT_EXPR           go to state 87
+    COMPARISON_EXPR      go to state 88
+    EQUAL_EXPR           go to state 89
+    AND_EXPR             go to state 90
+    XOR_EXPR             go to state 91
+    INCLUSIVE_OR_EXPR    go to state 92
+    LOGIC_AND_EXPR       go to state 93
+    LOGIC_OR_EXPR        go to state 94
+    CONDITION_EXPR       go to state 95
+    ASSIGN_EXPR          go to state 96
+    EXPR                 go to state 97
+    STATEMENT            go to state 190
+    LABELED_STATEMENT    go to state 99
+    COMPOUND_STATEMENT   go to state 100
+    EXPR_STATEMENT       go to state 103
+    SELECT_STATEMENT     go to state 104
+    ITERATION_STATEMENT  go to state 105
+    JUMP_STATEMENT       go to state 106
+
+
+State 189
+
+  134 COMPOUND_STATEMENT: T_LCURLY STATEMENT_LIST T_RCURLY .
+
+    $default  reduce using rule 134 (COMPOUND_STATEMENT)
+
+
+State 190
+
+  140 STATEMENT_LIST: STATEMENT_LIST STATEMENT .
+
+    $default  reduce using rule 140 (STATEMENT_LIST)
+
+
+State 191
+
+  115 PARAM_DECLARATION: DECLARATION_SPE DECLARATOR .
+
+    $default  reduce using rule 115 (PARAM_DECLARATION)
+
+
+State 192
+
+  108 DIRECT_DECL: DIRECT_DECL T_LBRACKET PARAM_TYPE_LIST T_RBRACKET .
+
+    $default  reduce using rule 108 (DIRECT_DECL)
+
+
+State 193
+
+  112 PARAM_TYPE_LIST: PARAM_LIST T_COMMA . T_ELLIPSIS
+  114 PARAM_LIST: PARAM_LIST T_COMMA . PARAM_DECLARATION
+
+    T_INT       shift, and go to state 1
+    T_VOID      shift, and go to state 2
+    T_ENUM      shift, and go to state 3
+    T_CONST     shift, and go to state 4
+    T_VOLATILE  shift, and go to state 5
+    T_EXTERN    shift, and go to state 6
+    T_TYPEDEF   shift, and go to state 7
+    T_STATIC    shift, and go to state 8
+    T_ELLIPSIS  shift, and go to state 243
+    T_UNSIGNED  shift, and go to state 10
+    T_CHAR      shift, and go to state 11
+    T_FLOAT     shift, and go to state 12
+    T_DOUBLE    shift, and go to state 13
+
+    DECLARATION_SPE    go to state 112
+    STORAGE_CLASS_SPE  go to state 17
+    TYPE_SPE           go to state 18
+    ENUM_SPECIFIER     go to state 19
+    TYPE_QUALIFIER     go to state 20
+    PARAM_DECLARATION  go to state 244
+
+
+State 194
+
+  109 DIRECT_DECL: DIRECT_DECL T_LBRACKET T_VARIABLE_LIST T_RBRACKET .
+
+    $default  reduce using rule 109 (DIRECT_DECL)
+
+
+State 195
+
+  118 T_VARIABLE_LIST: T_VARIABLE_LIST T_COMMA . T_VARIABLE
+
+    T_VARIABLE  shift, and go to state 245
+
+
+State 196
+
+  106 DIRECT_DECL: DIRECT_DECL L_SQRBRACKET CONST_EXPR R_SQRBRACKET .
+
+    $default  reduce using rule 106 (DIRECT_DECL)
+
+
+State 197
+
+  100 ENUMERATOR: T_VARIABLE T_ASSIGN CONST_EXPR .
+
+    $default  reduce using rule 100 (ENUMERATOR)
+
+
+State 198
+
+   98 ENUM_LIST: ENUM_LIST T_COMMA ENUMERATOR .
+
+    $default  reduce using rule 98 (ENUM_LIST)
+
+
+State 199
+
+   95 ENUM_SPECIFIER: T_ENUM T_VARIABLE T_LCURLY ENUM_LIST T_RCURLY .
+
+    $default  reduce using rule 95 (ENUM_SPECIFIER)
+
+
+State 200
+
+  122 VARIABLE_STORE_LIST: VARIABLE_STORE .
+
+    $default  reduce using rule 122 (VARIABLE_STORE_LIST)
+
+
+State 201
+
+  120 VARIABLE_STORE: T_LCURLY VARIABLE_STORE_LIST . T_RCURLY
+  121               | T_LCURLY VARIABLE_STORE_LIST . T_COMMA T_RCURLY
+  123 VARIABLE_STORE_LIST: VARIABLE_STORE_LIST . T_COMMA VARIABLE_STORE
+
+    T_RCURLY  shift, and go to state 246
+    T_COMMA   shift, and go to state 247
+
+
+State 202
+
+   72 EXPR: EXPR . T_COMMA ASSIGN_EXPR
+  146 ITERATION_STATEMENT: T_WHILE T_LBRACKET EXPR . T_RBRACKET STATEMENT
+
+    T_RBRACKET  shift, and go to state 248
+    T_COMMA     shift, and go to state 186
+
+
+State 203
+
+  150 ITERATION_STATEMENT: T_FOR T_LBRACKET DECLARATION . EXPR_STATEMENT EXPR T_RBRACKET STATEMENT
+
+    T_AND        shift, and go to state 65
+    T_NOT        shift, and go to state 66
+    T_INVERT     shift, and go to state 67
+    T_MULTIPLY   shift, and go to state 68
+    T_ADD        shift, and go to state 69
+    T_SUB        shift, and go to state 70
+    INC_OP       shift, and go to state 71
+    DEC_OP       shift, and go to state 72
+    T_LBRACKET   shift, and go to state 73
+    T_SEMICOLON  shift, and go to state 75
+    T_SIZEOF     shift, and go to state 76
+    T_NUM        shift, and go to state 77
+    T_VARIABLE   shift, and go to state 118
+    T_CHARVAL    shift, and go to state 79
+
+    PRIM_EXPR          go to state 80
+    POSTFIX_EXPR       go to state 81
+    UNARY_EXPR         go to state 82
+    UNARY_OP           go to state 83
+    CAST_EXPR          go to state 84
+    MULT_EXPR          go to state 85
+    ADD_EXPR           go to state 86
+    SHIFT_EXPR         go to state 87
+    COMPARISON_EXPR    go to state 88
+    EQUAL_EXPR         go to state 89
+    AND_EXPR           go to state 90
+    XOR_EXPR           go to state 91
+    INCLUSIVE_OR_EXPR  go to state 92
+    LOGIC_AND_EXPR     go to state 93
+    LOGIC_OR_EXPR      go to state 94
+    CONDITION_EXPR     go to state 95
+    ASSIGN_EXPR        go to state 96
+    EXPR               go to state 97
+    EXPR_STATEMENT     go to state 249
+
+
+State 204
+
+  148 ITERATION_STATEMENT: T_FOR T_LBRACKET EXPR_STATEMENT . EXPR_STATEMENT T_RBRACKET STATEMENT
+  149                    | T_FOR T_LBRACKET EXPR_STATEMENT . EXPR_STATEMENT EXPR T_RBRACKET STATEMENT
+
+    T_AND        shift, and go to state 65
+    T_NOT        shift, and go to state 66
+    T_INVERT     shift, and go to state 67
+    T_MULTIPLY   shift, and go to state 68
+    T_ADD        shift, and go to state 69
+    T_SUB        shift, and go to state 70
+    INC_OP       shift, and go to state 71
+    DEC_OP       shift, and go to state 72
+    T_LBRACKET   shift, and go to state 73
+    T_SEMICOLON  shift, and go to state 75
+    T_SIZEOF     shift, and go to state 76
+    T_NUM        shift, and go to state 77
+    T_VARIABLE   shift, and go to state 118
+    T_CHARVAL    shift, and go to state 79
+
+    PRIM_EXPR          go to state 80
+    POSTFIX_EXPR       go to state 81
+    UNARY_EXPR         go to state 82
+    UNARY_OP           go to state 83
+    CAST_EXPR          go to state 84
+    MULT_EXPR          go to state 85
+    ADD_EXPR           go to state 86
+    SHIFT_EXPR         go to state 87
+    COMPARISON_EXPR    go to state 88
+    EQUAL_EXPR         go to state 89
+    AND_EXPR           go to state 90
+    XOR_EXPR           go to state 91
+    INCLUSIVE_OR_EXPR  go to state 92
+    LOGIC_AND_EXPR     go to state 93
+    LOGIC_OR_EXPR      go to state 94
+    CONDITION_EXPR     go to state 95
+    ASSIGN_EXPR        go to state 96
+    EXPR               go to state 97
+    EXPR_STATEMENT     go to state 250
+
+
+State 205
+
+   72 EXPR: EXPR . T_COMMA ASSIGN_EXPR
+  143 SELECT_STATEMENT: T_IF T_LBRACKET EXPR . T_RBRACKET STATEMENT
+  144                 | T_IF T_LBRACKET EXPR . T_RBRACKET STATEMENT T_ELSE STATEMENT
+
+    T_RBRACKET  shift, and go to state 251
+    T_COMMA     shift, and go to state 186
+
+
+State 206
+
+  155 JUMP_STATEMENT: T_RETURN EXPR T_SEMICOLON .
+
+    $default  reduce using rule 155 (JUMP_STATEMENT)
+
+
+State 207
+
+   72 EXPR: EXPR . T_COMMA ASSIGN_EXPR
+  145 SELECT_STATEMENT: T_SWITCH T_LBRACKET EXPR . T_RBRACKET STATEMENT
+
+    T_RBRACKET  shift, and go to state 252
+    T_COMMA     shift, and go to state 186
+
+
+State 208
+
+  131 LABELED_STATEMENT: T_CASE CONST_EXPR T_COLON . STATEMENT
+
+    T_WHILE      shift, and go to state 54
+    T_FOR        shift, and go to state 55
+    T_IF         shift, and go to state 56
+    T_RETURN     shift, and go to state 57
+    T_BREAK      shift, and go to state 58
+    T_CONTINUE   shift, and go to state 59
+    T_SWITCH     shift, and go to state 60
+    T_CASE       shift, and go to state 61
+    T_DEFAULT    shift, and go to state 62
+    GOTO         shift, and go to state 63
+    T_DO         shift, and go to state 64
+    T_AND        shift, and go to state 65
+    T_NOT        shift, and go to state 66
+    T_INVERT     shift, and go to state 67
+    T_MULTIPLY   shift, and go to state 68
+    T_ADD        shift, and go to state 69
+    T_SUB        shift, and go to state 70
+    INC_OP       shift, and go to state 71
+    DEC_OP       shift, and go to state 72
+    T_LBRACKET   shift, and go to state 73
+    T_LCURLY     shift, and go to state 36
+    T_SEMICOLON  shift, and go to state 75
+    T_SIZEOF     shift, and go to state 76
+    T_NUM        shift, and go to state 77
+    T_VARIABLE   shift, and go to state 78
+    T_CHARVAL    shift, and go to state 79
+
+    PRIM_EXPR            go to state 80
+    POSTFIX_EXPR         go to state 81
+    UNARY_EXPR           go to state 82
+    UNARY_OP             go to state 83
+    CAST_EXPR            go to state 84
+    MULT_EXPR            go to state 85
+    ADD_EXPR             go to state 86
+    SHIFT_EXPR           go to state 87
+    COMPARISON_EXPR      go to state 88
+    EQUAL_EXPR           go to state 89
+    AND_EXPR             go to state 90
+    XOR_EXPR             go to state 91
+    INCLUSIVE_OR_EXPR    go to state 92
+    LOGIC_AND_EXPR       go to state 93
+    LOGIC_OR_EXPR        go to state 94
+    CONDITION_EXPR       go to state 95
+    ASSIGN_EXPR          go to state 96
+    EXPR                 go to state 97
+    STATEMENT            go to state 253
+    LABELED_STATEMENT    go to state 99
+    COMPOUND_STATEMENT   go to state 100
+    EXPR_STATEMENT       go to state 103
+    SELECT_STATEMENT     go to state 104
+    ITERATION_STATEMENT  go to state 105
+    JUMP_STATEMENT       go to state 106
+
+
+State 209
+
+  132 LABELED_STATEMENT: T_DEFAULT T_COLON STATEMENT .
+
+    $default  reduce using rule 132 (LABELED_STATEMENT)
+
+
+State 210
+
+  151 JUMP_STATEMENT: GOTO T_VARIABLE T_SEMICOLON .
+
+    $default  reduce using rule 151 (JUMP_STATEMENT)
+
+
+State 211
+
+  147 ITERATION_STATEMENT: T_DO STATEMENT T_WHILE . T_RBRACKET EXPR T_LBRACKET T_SEMICOLON
+
+    T_RBRACKET  shift, and go to state 254
+
+
+State 212
+
+    4 PRIM_EXPR: T_LBRACKET EXPR T_RBRACKET .
+
+    $default  reduce using rule 4 (PRIM_EXPR)
+
+
+State 213
+
+    5 POSTFIX_EXPR: PRIM_EXPR .
+   19 UNARY_EXPR: T_SIZEOF T_LBRACKET PRIM_EXPR . T_RBRACKET
+
+    T_RBRACKET  shift, and go to state 255
+
+    T_RBRACKET  [reduce using rule 5 (POSTFIX_EXPR)]
+    $default    reduce using rule 5 (POSTFIX_EXPR)
+
+
+State 214
+
+   20 UNARY_EXPR: T_SIZEOF T_LBRACKET TYPE_SPE . T_RBRACKET
+
+    T_RBRACKET  shift, and go to state 256
+
+
+State 215
+
+  130 LABELED_STATEMENT: T_VARIABLE T_COLON STATEMENT .
+
+    $default  reduce using rule 130 (LABELED_STATEMENT)
+
+
+State 216
+
+    7 POSTFIX_EXPR: POSTFIX_EXPR T_LBRACKET T_RBRACKET .
+
+    $default  reduce using rule 7 (POSTFIX_EXPR)
+
+
+State 217
+
+    8 POSTFIX_EXPR: POSTFIX_EXPR T_LBRACKET ARG_EXPR_LIST . T_RBRACKET
+
+    T_RBRACKET  shift, and go to state 257
+
+
+State 218
+
+   12 ARG_EXPR_LIST: ASSIGN_EXPR .
+   13              | ASSIGN_EXPR . T_COMMA ARG_EXPR_LIST
+
+    T_COMMA  shift, and go to state 258
+
+    $default  reduce using rule 12 (ARG_EXPR_LIST)
+
+
+State 219
+
+    6 POSTFIX_EXPR: POSTFIX_EXPR L_SQRBRACKET EXPR . R_SQRBRACKET
+   72 EXPR: EXPR . T_COMMA ASSIGN_EXPR
+
+    R_SQRBRACKET  shift, and go to state 259
+    T_COMMA       shift, and go to state 186
+
+
+State 220
+
+    9 POSTFIX_EXPR: POSTFIX_EXPR T_PERIOD T_VARIABLE .
+
+    $default  reduce using rule 9 (POSTFIX_EXPR)
+
+
+State 221
+
+   70 ASSIGN_EXPR: UNARY_EXPR ASSIGN_OP ASSIGN_EXPR .
+
+    $default  reduce using rule 70 (ASSIGN_EXPR)
+
+
+State 222
+
+   31 MULT_EXPR: MULT_EXPR T_MODULO CAST_EXPR .
+
+    $default  reduce using rule 31 (MULT_EXPR)
+
+
+State 223
+
+   29 MULT_EXPR: MULT_EXPR T_MULTIPLY CAST_EXPR .
+
+    $default  reduce using rule 29 (MULT_EXPR)
+
+
+State 224
+
+   30 MULT_EXPR: MULT_EXPR T_DIV CAST_EXPR .
+
+    $default  reduce using rule 30 (MULT_EXPR)
+
+
+State 225
+
+   29 MULT_EXPR: MULT_EXPR . T_MULTIPLY CAST_EXPR
+   30          | MULT_EXPR . T_DIV CAST_EXPR
+   31          | MULT_EXPR . T_MODULO CAST_EXPR
+   33 ADD_EXPR: ADD_EXPR T_ADD MULT_EXPR .
+
+    T_MODULO    shift, and go to state 166
+    T_MULTIPLY  shift, and go to state 167
+    T_DIV       shift, and go to state 168
+
+    $default  reduce using rule 33 (ADD_EXPR)
+
+
+State 226
+
+   29 MULT_EXPR: MULT_EXPR . T_MULTIPLY CAST_EXPR
+   30          | MULT_EXPR . T_DIV CAST_EXPR
+   31          | MULT_EXPR . T_MODULO CAST_EXPR
+   34 ADD_EXPR: ADD_EXPR T_SUB MULT_EXPR .
+
+    T_MODULO    shift, and go to state 166
+    T_MULTIPLY  shift, and go to state 167
+    T_DIV       shift, and go to state 168
+
+    $default  reduce using rule 34 (ADD_EXPR)
+
+
+State 227
+
+   33 ADD_EXPR: ADD_EXPR . T_ADD MULT_EXPR
+   34         | ADD_EXPR . T_SUB MULT_EXPR
+   37 SHIFT_EXPR: SHIFT_EXPR T_SHIFTRIGHT ADD_EXPR .
+
+    T_ADD  shift, and go to state 169
+    T_SUB  shift, and go to state 170
+
+    $default  reduce using rule 37 (SHIFT_EXPR)
+
+
+State 228
+
+   33 ADD_EXPR: ADD_EXPR . T_ADD MULT_EXPR
+   34         | ADD_EXPR . T_SUB MULT_EXPR
+   36 SHIFT_EXPR: SHIFT_EXPR T_SHIFTLEFT ADD_EXPR .
+
+    T_ADD  shift, and go to state 169
+    T_SUB  shift, and go to state 170
+
+    $default  reduce using rule 36 (SHIFT_EXPR)
+
+
+State 229
+
+   36 SHIFT_EXPR: SHIFT_EXPR . T_SHIFTLEFT ADD_EXPR
+   37           | SHIFT_EXPR . T_SHIFTRIGHT ADD_EXPR
+   39 COMPARISON_EXPR: COMPARISON_EXPR T_LESSTHAN SHIFT_EXPR .
+
+    T_SHIFTRIGHT  shift, and go to state 171
+    T_SHIFTLEFT   shift, and go to state 172
+
+    $default  reduce using rule 39 (COMPARISON_EXPR)
+
+
+State 230
+
+   36 SHIFT_EXPR: SHIFT_EXPR . T_SHIFTLEFT ADD_EXPR
+   37           | SHIFT_EXPR . T_SHIFTRIGHT ADD_EXPR
+   40 COMPARISON_EXPR: COMPARISON_EXPR T_GREATERTHAN SHIFT_EXPR .
+
+    T_SHIFTRIGHT  shift, and go to state 171
+    T_SHIFTLEFT   shift, and go to state 172
+
+    $default  reduce using rule 40 (COMPARISON_EXPR)
+
+
+State 231
+
+   36 SHIFT_EXPR: SHIFT_EXPR . T_SHIFTLEFT ADD_EXPR
+   37           | SHIFT_EXPR . T_SHIFTRIGHT ADD_EXPR
+   42 COMPARISON_EXPR: COMPARISON_EXPR T_GREATERTHANEQUAL SHIFT_EXPR .
+
+    T_SHIFTRIGHT  shift, and go to state 171
+    T_SHIFTLEFT   shift, and go to state 172
+
+    $default  reduce using rule 42 (COMPARISON_EXPR)
+
+
+State 232
+
+   36 SHIFT_EXPR: SHIFT_EXPR . T_SHIFTLEFT ADD_EXPR
+   37           | SHIFT_EXPR . T_SHIFTRIGHT ADD_EXPR
+   41 COMPARISON_EXPR: COMPARISON_EXPR T_LESSTHANEQUAL SHIFT_EXPR .
+
+    T_SHIFTRIGHT  shift, and go to state 171
+    T_SHIFTLEFT   shift, and go to state 172
+
+    $default  reduce using rule 41 (COMPARISON_EXPR)
+
+
+State 233
+
+   39 COMPARISON_EXPR: COMPARISON_EXPR . T_LESSTHAN SHIFT_EXPR
+   40                | COMPARISON_EXPR . T_GREATERTHAN SHIFT_EXPR
+   41                | COMPARISON_EXPR . T_LESSTHANEQUAL SHIFT_EXPR
+   42                | COMPARISON_EXPR . T_GREATERTHANEQUAL SHIFT_EXPR
+   44 EQUAL_EXPR: EQUAL_EXPR T_EQUAL COMPARISON_EXPR .
+
+    T_LESSTHAN          shift, and go to state 173
+    T_GREATERTHAN       shift, and go to state 174
+    T_GREATERTHANEQUAL  shift, and go to state 175
+    T_LESSTHANEQUAL     shift, and go to state 176
+
+    $default  reduce using rule 44 (EQUAL_EXPR)
+
+
+State 234
+
+   39 COMPARISON_EXPR: COMPARISON_EXPR . T_LESSTHAN SHIFT_EXPR
+   40                | COMPARISON_EXPR . T_GREATERTHAN SHIFT_EXPR
+   41                | COMPARISON_EXPR . T_LESSTHANEQUAL SHIFT_EXPR
+   42                | COMPARISON_EXPR . T_GREATERTHANEQUAL SHIFT_EXPR
+   45 EQUAL_EXPR: EQUAL_EXPR T_NOTEQUAL COMPARISON_EXPR .
+
+    T_LESSTHAN          shift, and go to state 173
+    T_GREATERTHAN       shift, and go to state 174
+    T_GREATERTHANEQUAL  shift, and go to state 175
+    T_LESSTHANEQUAL     shift, and go to state 176
+
+    $default  reduce using rule 45 (EQUAL_EXPR)
+
+
+State 235
+
+   44 EQUAL_EXPR: EQUAL_EXPR . T_EQUAL COMPARISON_EXPR
+   45           | EQUAL_EXPR . T_NOTEQUAL COMPARISON_EXPR
+   47 AND_EXPR: AND_EXPR T_AND EQUAL_EXPR .
+
+    T_EQUAL     shift, and go to state 177
+    T_NOTEQUAL  shift, and go to state 178
+
+    $default  reduce using rule 47 (AND_EXPR)
+
+
+State 236
+
+   47 AND_EXPR: AND_EXPR . T_AND EQUAL_EXPR
+   49 XOR_EXPR: XOR_EXPR T_XOR AND_EXPR .
+
+    T_AND  shift, and go to state 179
+
+    $default  reduce using rule 49 (XOR_EXPR)
+
+
+State 237
+
+   47 AND_EXPR: AND_EXPR . T_AND EQUAL_EXPR
+   51 INCLUSIVE_OR_EXPR: INCLUSIVE_OR_EXPR T_OR AND_EXPR .
+
+    T_AND  shift, and go to state 179
+
+    $default  reduce using rule 51 (INCLUSIVE_OR_EXPR)
+
+
+State 238
+
+   51 INCLUSIVE_OR_EXPR: INCLUSIVE_OR_EXPR . T_OR AND_EXPR
+   53 LOGIC_AND_EXPR: LOGIC_AND_EXPR T_AND_OP INCLUSIVE_OR_EXPR .
+
+    T_OR  shift, and go to state 181
+
+    $default  reduce using rule 53 (LOGIC_AND_EXPR)
+
+
+State 239
+
+   53 LOGIC_AND_EXPR: LOGIC_AND_EXPR . T_AND_OP INCLUSIVE_OR_EXPR
+   55 LOGIC_OR_EXPR: LOGIC_OR_EXPR T_OR_OP LOGIC_AND_EXPR .
+
+    T_AND_OP  shift, and go to state 182
+
+    $default  reduce using rule 55 (LOGIC_OR_EXPR)
+
+
+State 240
+
+   57 CONDITION_EXPR: LOGIC_OR_EXPR T_QUESTION EXPR . T_COLON CONDITION_EXPR
+   72 EXPR: EXPR . T_COMMA ASSIGN_EXPR
+
+    T_COMMA  shift, and go to state 186
+    T_COLON  shift, and go to state 260
+
+
+State 241
+
+   72 EXPR: EXPR T_COMMA ASSIGN_EXPR .
+
+    $default  reduce using rule 72 (EXPR)
+
+
+State 242
+
+  136 COMPOUND_STATEMENT: T_LCURLY DECLARATION_LIST STATEMENT_LIST T_RCURLY .
+
+    $default  reduce using rule 136 (COMPOUND_STATEMENT)
+
+
+State 243
+
+  112 PARAM_TYPE_LIST: PARAM_LIST T_COMMA T_ELLIPSIS .
+
+    $default  reduce using rule 112 (PARAM_TYPE_LIST)
+
+
+State 244
+
+  114 PARAM_LIST: PARAM_LIST T_COMMA PARAM_DECLARATION .
+
+    $default  reduce using rule 114 (PARAM_LIST)
+
+
+State 245
+
+  118 T_VARIABLE_LIST: T_VARIABLE_LIST T_COMMA T_VARIABLE .
+
+    $default  reduce using rule 118 (T_VARIABLE_LIST)
+
+
+State 246
+
+  120 VARIABLE_STORE: T_LCURLY VARIABLE_STORE_LIST T_RCURLY .
+
+    $default  reduce using rule 120 (VARIABLE_STORE)
+
+
+State 247
+
+  121 VARIABLE_STORE: T_LCURLY VARIABLE_STORE_LIST T_COMMA . T_RCURLY
+  123 VARIABLE_STORE_LIST: VARIABLE_STORE_LIST T_COMMA . VARIABLE_STORE
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_LCURLY    shift, and go to state 126
+    T_RCURLY    shift, and go to state 261
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR          go to state 80
+    POSTFIX_EXPR       go to state 81
+    UNARY_EXPR         go to state 82
+    UNARY_OP           go to state 83
+    CAST_EXPR          go to state 84
+    MULT_EXPR          go to state 85
+    ADD_EXPR           go to state 86
+    SHIFT_EXPR         go to state 87
+    COMPARISON_EXPR    go to state 88
+    EQUAL_EXPR         go to state 89
+    AND_EXPR           go to state 90
+    XOR_EXPR           go to state 91
+    INCLUSIVE_OR_EXPR  go to state 92
+    LOGIC_AND_EXPR     go to state 93
+    LOGIC_OR_EXPR      go to state 94
+    CONDITION_EXPR     go to state 95
+    ASSIGN_EXPR        go to state 127
+    VARIABLE_STORE     go to state 262
+
+
+State 248
+
+  146 ITERATION_STATEMENT: T_WHILE T_LBRACKET EXPR T_RBRACKET . STATEMENT
+
+    T_WHILE      shift, and go to state 54
+    T_FOR        shift, and go to state 55
+    T_IF         shift, and go to state 56
+    T_RETURN     shift, and go to state 57
+    T_BREAK      shift, and go to state 58
+    T_CONTINUE   shift, and go to state 59
+    T_SWITCH     shift, and go to state 60
+    T_CASE       shift, and go to state 61
+    T_DEFAULT    shift, and go to state 62
+    GOTO         shift, and go to state 63
+    T_DO         shift, and go to state 64
+    T_AND        shift, and go to state 65
+    T_NOT        shift, and go to state 66
+    T_INVERT     shift, and go to state 67
+    T_MULTIPLY   shift, and go to state 68
+    T_ADD        shift, and go to state 69
+    T_SUB        shift, and go to state 70
+    INC_OP       shift, and go to state 71
+    DEC_OP       shift, and go to state 72
+    T_LBRACKET   shift, and go to state 73
+    T_LCURLY     shift, and go to state 36
+    T_SEMICOLON  shift, and go to state 75
+    T_SIZEOF     shift, and go to state 76
+    T_NUM        shift, and go to state 77
+    T_VARIABLE   shift, and go to state 78
+    T_CHARVAL    shift, and go to state 79
+
+    PRIM_EXPR            go to state 80
+    POSTFIX_EXPR         go to state 81
+    UNARY_EXPR           go to state 82
+    UNARY_OP             go to state 83
+    CAST_EXPR            go to state 84
+    MULT_EXPR            go to state 85
+    ADD_EXPR             go to state 86
+    SHIFT_EXPR           go to state 87
+    COMPARISON_EXPR      go to state 88
+    EQUAL_EXPR           go to state 89
+    AND_EXPR             go to state 90
+    XOR_EXPR             go to state 91
+    INCLUSIVE_OR_EXPR    go to state 92
+    LOGIC_AND_EXPR       go to state 93
+    LOGIC_OR_EXPR        go to state 94
+    CONDITION_EXPR       go to state 95
+    ASSIGN_EXPR          go to state 96
+    EXPR                 go to state 97
+    STATEMENT            go to state 263
+    LABELED_STATEMENT    go to state 99
+    COMPOUND_STATEMENT   go to state 100
+    EXPR_STATEMENT       go to state 103
+    SELECT_STATEMENT     go to state 104
+    ITERATION_STATEMENT  go to state 105
+    JUMP_STATEMENT       go to state 106
+
+
+State 249
+
+  150 ITERATION_STATEMENT: T_FOR T_LBRACKET DECLARATION EXPR_STATEMENT . EXPR T_RBRACKET STATEMENT
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR          go to state 80
+    POSTFIX_EXPR       go to state 81
+    UNARY_EXPR         go to state 82
+    UNARY_OP           go to state 83
+    CAST_EXPR          go to state 84
+    MULT_EXPR          go to state 85
+    ADD_EXPR           go to state 86
+    SHIFT_EXPR         go to state 87
+    COMPARISON_EXPR    go to state 88
+    EQUAL_EXPR         go to state 89
+    AND_EXPR           go to state 90
+    XOR_EXPR           go to state 91
+    INCLUSIVE_OR_EXPR  go to state 92
+    LOGIC_AND_EXPR     go to state 93
+    LOGIC_OR_EXPR      go to state 94
+    CONDITION_EXPR     go to state 95
+    ASSIGN_EXPR        go to state 96
+    EXPR               go to state 264
+
+
+State 250
+
+  148 ITERATION_STATEMENT: T_FOR T_LBRACKET EXPR_STATEMENT EXPR_STATEMENT . T_RBRACKET STATEMENT
+  149                    | T_FOR T_LBRACKET EXPR_STATEMENT EXPR_STATEMENT . EXPR T_RBRACKET STATEMENT
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_RBRACKET  shift, and go to state 265
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR          go to state 80
+    POSTFIX_EXPR       go to state 81
+    UNARY_EXPR         go to state 82
+    UNARY_OP           go to state 83
+    CAST_EXPR          go to state 84
+    MULT_EXPR          go to state 85
+    ADD_EXPR           go to state 86
+    SHIFT_EXPR         go to state 87
+    COMPARISON_EXPR    go to state 88
+    EQUAL_EXPR         go to state 89
+    AND_EXPR           go to state 90
+    XOR_EXPR           go to state 91
+    INCLUSIVE_OR_EXPR  go to state 92
+    LOGIC_AND_EXPR     go to state 93
+    LOGIC_OR_EXPR      go to state 94
+    CONDITION_EXPR     go to state 95
+    ASSIGN_EXPR        go to state 96
+    EXPR               go to state 266
+
+
+State 251
+
+  143 SELECT_STATEMENT: T_IF T_LBRACKET EXPR T_RBRACKET . STATEMENT
+  144                 | T_IF T_LBRACKET EXPR T_RBRACKET . STATEMENT T_ELSE STATEMENT
+
+    T_WHILE      shift, and go to state 54
+    T_FOR        shift, and go to state 55
+    T_IF         shift, and go to state 56
+    T_RETURN     shift, and go to state 57
+    T_BREAK      shift, and go to state 58
+    T_CONTINUE   shift, and go to state 59
+    T_SWITCH     shift, and go to state 60
+    T_CASE       shift, and go to state 61
+    T_DEFAULT    shift, and go to state 62
+    GOTO         shift, and go to state 63
+    T_DO         shift, and go to state 64
+    T_AND        shift, and go to state 65
+    T_NOT        shift, and go to state 66
+    T_INVERT     shift, and go to state 67
+    T_MULTIPLY   shift, and go to state 68
+    T_ADD        shift, and go to state 69
+    T_SUB        shift, and go to state 70
+    INC_OP       shift, and go to state 71
+    DEC_OP       shift, and go to state 72
+    T_LBRACKET   shift, and go to state 73
+    T_LCURLY     shift, and go to state 36
+    T_SEMICOLON  shift, and go to state 75
+    T_SIZEOF     shift, and go to state 76
+    T_NUM        shift, and go to state 77
+    T_VARIABLE   shift, and go to state 78
+    T_CHARVAL    shift, and go to state 79
+
+    PRIM_EXPR            go to state 80
+    POSTFIX_EXPR         go to state 81
+    UNARY_EXPR           go to state 82
+    UNARY_OP             go to state 83
+    CAST_EXPR            go to state 84
+    MULT_EXPR            go to state 85
+    ADD_EXPR             go to state 86
+    SHIFT_EXPR           go to state 87
+    COMPARISON_EXPR      go to state 88
+    EQUAL_EXPR           go to state 89
+    AND_EXPR             go to state 90
+    XOR_EXPR             go to state 91
+    INCLUSIVE_OR_EXPR    go to state 92
+    LOGIC_AND_EXPR       go to state 93
+    LOGIC_OR_EXPR        go to state 94
+    CONDITION_EXPR       go to state 95
+    ASSIGN_EXPR          go to state 96
+    EXPR                 go to state 97
+    STATEMENT            go to state 267
+    LABELED_STATEMENT    go to state 99
+    COMPOUND_STATEMENT   go to state 100
+    EXPR_STATEMENT       go to state 103
+    SELECT_STATEMENT     go to state 104
+    ITERATION_STATEMENT  go to state 105
+    JUMP_STATEMENT       go to state 106
+
+
+State 252
+
+  145 SELECT_STATEMENT: T_SWITCH T_LBRACKET EXPR T_RBRACKET . STATEMENT
+
+    T_WHILE      shift, and go to state 54
+    T_FOR        shift, and go to state 55
+    T_IF         shift, and go to state 56
+    T_RETURN     shift, and go to state 57
+    T_BREAK      shift, and go to state 58
+    T_CONTINUE   shift, and go to state 59
+    T_SWITCH     shift, and go to state 60
+    T_CASE       shift, and go to state 61
+    T_DEFAULT    shift, and go to state 62
+    GOTO         shift, and go to state 63
+    T_DO         shift, and go to state 64
+    T_AND        shift, and go to state 65
+    T_NOT        shift, and go to state 66
+    T_INVERT     shift, and go to state 67
+    T_MULTIPLY   shift, and go to state 68
+    T_ADD        shift, and go to state 69
+    T_SUB        shift, and go to state 70
+    INC_OP       shift, and go to state 71
+    DEC_OP       shift, and go to state 72
+    T_LBRACKET   shift, and go to state 73
+    T_LCURLY     shift, and go to state 36
+    T_SEMICOLON  shift, and go to state 75
+    T_SIZEOF     shift, and go to state 76
+    T_NUM        shift, and go to state 77
+    T_VARIABLE   shift, and go to state 78
+    T_CHARVAL    shift, and go to state 79
+
+    PRIM_EXPR            go to state 80
+    POSTFIX_EXPR         go to state 81
+    UNARY_EXPR           go to state 82
+    UNARY_OP             go to state 83
+    CAST_EXPR            go to state 84
+    MULT_EXPR            go to state 85
+    ADD_EXPR             go to state 86
+    SHIFT_EXPR           go to state 87
+    COMPARISON_EXPR      go to state 88
+    EQUAL_EXPR           go to state 89
+    AND_EXPR             go to state 90
+    XOR_EXPR             go to state 91
+    INCLUSIVE_OR_EXPR    go to state 92
+    LOGIC_AND_EXPR       go to state 93
+    LOGIC_OR_EXPR        go to state 94
+    CONDITION_EXPR       go to state 95
+    ASSIGN_EXPR          go to state 96
+    EXPR                 go to state 97
+    STATEMENT            go to state 268
+    LABELED_STATEMENT    go to state 99
+    COMPOUND_STATEMENT   go to state 100
+    EXPR_STATEMENT       go to state 103
+    SELECT_STATEMENT     go to state 104
+    ITERATION_STATEMENT  go to state 105
+    JUMP_STATEMENT       go to state 106
+
+
+State 253
+
+  131 LABELED_STATEMENT: T_CASE CONST_EXPR T_COLON STATEMENT .
+
+    $default  reduce using rule 131 (LABELED_STATEMENT)
+
+
+State 254
+
+  147 ITERATION_STATEMENT: T_DO STATEMENT T_WHILE T_RBRACKET . EXPR T_LBRACKET T_SEMICOLON
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR          go to state 80
+    POSTFIX_EXPR       go to state 81
+    UNARY_EXPR         go to state 82
+    UNARY_OP           go to state 83
+    CAST_EXPR          go to state 84
+    MULT_EXPR          go to state 85
+    ADD_EXPR           go to state 86
+    SHIFT_EXPR         go to state 87
+    COMPARISON_EXPR    go to state 88
+    EQUAL_EXPR         go to state 89
+    AND_EXPR           go to state 90
+    XOR_EXPR           go to state 91
+    INCLUSIVE_OR_EXPR  go to state 92
+    LOGIC_AND_EXPR     go to state 93
+    LOGIC_OR_EXPR      go to state 94
+    CONDITION_EXPR     go to state 95
+    ASSIGN_EXPR        go to state 96
+    EXPR               go to state 269
+
+
+State 255
+
+   19 UNARY_EXPR: T_SIZEOF T_LBRACKET PRIM_EXPR T_RBRACKET .
+
+    $default  reduce using rule 19 (UNARY_EXPR)
+
+
+State 256
+
+   20 UNARY_EXPR: T_SIZEOF T_LBRACKET TYPE_SPE T_RBRACKET .
+
+    $default  reduce using rule 20 (UNARY_EXPR)
+
+
+State 257
+
+    8 POSTFIX_EXPR: POSTFIX_EXPR T_LBRACKET ARG_EXPR_LIST T_RBRACKET .
+
+    $default  reduce using rule 8 (POSTFIX_EXPR)
+
+
+State 258
+
+   13 ARG_EXPR_LIST: ASSIGN_EXPR T_COMMA . ARG_EXPR_LIST
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR          go to state 80
+    POSTFIX_EXPR       go to state 81
+    ARG_EXPR_LIST      go to state 270
+    UNARY_EXPR         go to state 82
+    UNARY_OP           go to state 83
+    CAST_EXPR          go to state 84
+    MULT_EXPR          go to state 85
+    ADD_EXPR           go to state 86
+    SHIFT_EXPR         go to state 87
+    COMPARISON_EXPR    go to state 88
+    EQUAL_EXPR         go to state 89
+    AND_EXPR           go to state 90
+    XOR_EXPR           go to state 91
+    INCLUSIVE_OR_EXPR  go to state 92
+    LOGIC_AND_EXPR     go to state 93
+    LOGIC_OR_EXPR      go to state 94
+    CONDITION_EXPR     go to state 95
+    ASSIGN_EXPR        go to state 218
+
+
+State 259
+
+    6 POSTFIX_EXPR: POSTFIX_EXPR L_SQRBRACKET EXPR R_SQRBRACKET .
+
+    $default  reduce using rule 6 (POSTFIX_EXPR)
+
+
+State 260
+
+   57 CONDITION_EXPR: LOGIC_OR_EXPR T_QUESTION EXPR T_COLON . CONDITION_EXPR
+
+    T_AND       shift, and go to state 65
+    T_NOT       shift, and go to state 66
+    T_INVERT    shift, and go to state 67
+    T_MULTIPLY  shift, and go to state 68
+    T_ADD       shift, and go to state 69
+    T_SUB       shift, and go to state 70
+    INC_OP      shift, and go to state 71
+    DEC_OP      shift, and go to state 72
+    T_LBRACKET  shift, and go to state 73
+    T_SIZEOF    shift, and go to state 76
+    T_NUM       shift, and go to state 77
+    T_VARIABLE  shift, and go to state 118
+    T_CHARVAL   shift, and go to state 79
+
+    PRIM_EXPR          go to state 80
+    POSTFIX_EXPR       go to state 81
+    UNARY_EXPR         go to state 119
+    UNARY_OP           go to state 83
+    CAST_EXPR          go to state 84
+    MULT_EXPR          go to state 85
+    ADD_EXPR           go to state 86
+    SHIFT_EXPR         go to state 87
+    COMPARISON_EXPR    go to state 88
+    EQUAL_EXPR         go to state 89
+    AND_EXPR           go to state 90
+    XOR_EXPR           go to state 91
+    INCLUSIVE_OR_EXPR  go to state 92
+    LOGIC_AND_EXPR     go to state 93
+    LOGIC_OR_EXPR      go to state 94
+    CONDITION_EXPR     go to state 271
+
+
+State 261
+
+  121 VARIABLE_STORE: T_LCURLY VARIABLE_STORE_LIST T_COMMA T_RCURLY .
+
+    $default  reduce using rule 121 (VARIABLE_STORE)
+
+
+State 262
+
+  123 VARIABLE_STORE_LIST: VARIABLE_STORE_LIST T_COMMA VARIABLE_STORE .
+
+    $default  reduce using rule 123 (VARIABLE_STORE_LIST)
+
+
+State 263
+
+  146 ITERATION_STATEMENT: T_WHILE T_LBRACKET EXPR T_RBRACKET STATEMENT .
+
+    $default  reduce using rule 146 (ITERATION_STATEMENT)
+
+
+State 264
+
+   72 EXPR: EXPR . T_COMMA ASSIGN_EXPR
+  150 ITERATION_STATEMENT: T_FOR T_LBRACKET DECLARATION EXPR_STATEMENT EXPR . T_RBRACKET STATEMENT
+
+    T_RBRACKET  shift, and go to state 272
+    T_COMMA     shift, and go to state 186
+
+
+State 265
+
+  148 ITERATION_STATEMENT: T_FOR T_LBRACKET EXPR_STATEMENT EXPR_STATEMENT T_RBRACKET . STATEMENT
+
+    T_WHILE      shift, and go to state 54
+    T_FOR        shift, and go to state 55
+    T_IF         shift, and go to state 56
+    T_RETURN     shift, and go to state 57
+    T_BREAK      shift, and go to state 58
+    T_CONTINUE   shift, and go to state 59
+    T_SWITCH     shift, and go to state 60
+    T_CASE       shift, and go to state 61
+    T_DEFAULT    shift, and go to state 62
+    GOTO         shift, and go to state 63
+    T_DO         shift, and go to state 64
+    T_AND        shift, and go to state 65
+    T_NOT        shift, and go to state 66
+    T_INVERT     shift, and go to state 67
+    T_MULTIPLY   shift, and go to state 68
+    T_ADD        shift, and go to state 69
+    T_SUB        shift, and go to state 70
+    INC_OP       shift, and go to state 71
+    DEC_OP       shift, and go to state 72
+    T_LBRACKET   shift, and go to state 73
+    T_LCURLY     shift, and go to state 36
+    T_SEMICOLON  shift, and go to state 75
+    T_SIZEOF     shift, and go to state 76
+    T_NUM        shift, and go to state 77
+    T_VARIABLE   shift, and go to state 78
+    T_CHARVAL    shift, and go to state 79
+
+    PRIM_EXPR            go to state 80
+    POSTFIX_EXPR         go to state 81
+    UNARY_EXPR           go to state 82
+    UNARY_OP             go to state 83
+    CAST_EXPR            go to state 84
+    MULT_EXPR            go to state 85
+    ADD_EXPR             go to state 86
+    SHIFT_EXPR           go to state 87
+    COMPARISON_EXPR      go to state 88
+    EQUAL_EXPR           go to state 89
+    AND_EXPR             go to state 90
+    XOR_EXPR             go to state 91
+    INCLUSIVE_OR_EXPR    go to state 92
+    LOGIC_AND_EXPR       go to state 93
+    LOGIC_OR_EXPR        go to state 94
+    CONDITION_EXPR       go to state 95
+    ASSIGN_EXPR          go to state 96
+    EXPR                 go to state 97
+    STATEMENT            go to state 273
+    LABELED_STATEMENT    go to state 99
+    COMPOUND_STATEMENT   go to state 100
+    EXPR_STATEMENT       go to state 103
+    SELECT_STATEMENT     go to state 104
+    ITERATION_STATEMENT  go to state 105
+    JUMP_STATEMENT       go to state 106
+
+
+State 266
+
+   72 EXPR: EXPR . T_COMMA ASSIGN_EXPR
+  149 ITERATION_STATEMENT: T_FOR T_LBRACKET EXPR_STATEMENT EXPR_STATEMENT EXPR . T_RBRACKET STATEMENT
+
+    T_RBRACKET  shift, and go to state 274
+    T_COMMA     shift, and go to state 186
+
+
+State 267
+
+  143 SELECT_STATEMENT: T_IF T_LBRACKET EXPR T_RBRACKET STATEMENT .
+  144                 | T_IF T_LBRACKET EXPR T_RBRACKET STATEMENT . T_ELSE STATEMENT
+
+    T_ELSE  shift, and go to state 275
+
+    T_ELSE    [reduce using rule 143 (SELECT_STATEMENT)]
+    $default  reduce using rule 143 (SELECT_STATEMENT)
+
+
+State 268
+
+  145 SELECT_STATEMENT: T_SWITCH T_LBRACKET EXPR T_RBRACKET STATEMENT .
+
+    $default  reduce using rule 145 (SELECT_STATEMENT)
+
+
+State 269
+
+   72 EXPR: EXPR . T_COMMA ASSIGN_EXPR
+  147 ITERATION_STATEMENT: T_DO STATEMENT T_WHILE T_RBRACKET EXPR . T_LBRACKET T_SEMICOLON
+
+    T_LBRACKET  shift, and go to state 276
+    T_COMMA     shift, and go to state 186
+
+
+State 270
+
+   13 ARG_EXPR_LIST: ASSIGN_EXPR T_COMMA ARG_EXPR_LIST .
+
+    $default  reduce using rule 13 (ARG_EXPR_LIST)
+
+
+State 271
+
+   57 CONDITION_EXPR: LOGIC_OR_EXPR T_QUESTION EXPR T_COLON CONDITION_EXPR .
+
+    $default  reduce using rule 57 (CONDITION_EXPR)
+
+
+State 272
+
+  150 ITERATION_STATEMENT: T_FOR T_LBRACKET DECLARATION EXPR_STATEMENT EXPR T_RBRACKET . STATEMENT
+
+    T_WHILE      shift, and go to state 54
+    T_FOR        shift, and go to state 55
+    T_IF         shift, and go to state 56
+    T_RETURN     shift, and go to state 57
+    T_BREAK      shift, and go to state 58
+    T_CONTINUE   shift, and go to state 59
+    T_SWITCH     shift, and go to state 60
+    T_CASE       shift, and go to state 61
+    T_DEFAULT    shift, and go to state 62
+    GOTO         shift, and go to state 63
+    T_DO         shift, and go to state 64
+    T_AND        shift, and go to state 65
+    T_NOT        shift, and go to state 66
+    T_INVERT     shift, and go to state 67
+    T_MULTIPLY   shift, and go to state 68
+    T_ADD        shift, and go to state 69
+    T_SUB        shift, and go to state 70
+    INC_OP       shift, and go to state 71
+    DEC_OP       shift, and go to state 72
+    T_LBRACKET   shift, and go to state 73
+    T_LCURLY     shift, and go to state 36
+    T_SEMICOLON  shift, and go to state 75
+    T_SIZEOF     shift, and go to state 76
+    T_NUM        shift, and go to state 77
+    T_VARIABLE   shift, and go to state 78
+    T_CHARVAL    shift, and go to state 79
+
+    PRIM_EXPR            go to state 80
+    POSTFIX_EXPR         go to state 81
+    UNARY_EXPR           go to state 82
+    UNARY_OP             go to state 83
+    CAST_EXPR            go to state 84
+    MULT_EXPR            go to state 85
+    ADD_EXPR             go to state 86
+    SHIFT_EXPR           go to state 87
+    COMPARISON_EXPR      go to state 88
+    EQUAL_EXPR           go to state 89
+    AND_EXPR             go to state 90
+    XOR_EXPR             go to state 91
+    INCLUSIVE_OR_EXPR    go to state 92
+    LOGIC_AND_EXPR       go to state 93
+    LOGIC_OR_EXPR        go to state 94
+    CONDITION_EXPR       go to state 95
+    ASSIGN_EXPR          go to state 96
+    EXPR                 go to state 97
+    STATEMENT            go to state 277
+    LABELED_STATEMENT    go to state 99
+    COMPOUND_STATEMENT   go to state 100
+    EXPR_STATEMENT       go to state 103
+    SELECT_STATEMENT     go to state 104
+    ITERATION_STATEMENT  go to state 105
+    JUMP_STATEMENT       go to state 106
+
+
+State 273
+
+  148 ITERATION_STATEMENT: T_FOR T_LBRACKET EXPR_STATEMENT EXPR_STATEMENT T_RBRACKET STATEMENT .
+
+    $default  reduce using rule 148 (ITERATION_STATEMENT)
+
+
+State 274
+
+  149 ITERATION_STATEMENT: T_FOR T_LBRACKET EXPR_STATEMENT EXPR_STATEMENT EXPR T_RBRACKET . STATEMENT
+
+    T_WHILE      shift, and go to state 54
+    T_FOR        shift, and go to state 55
+    T_IF         shift, and go to state 56
+    T_RETURN     shift, and go to state 57
+    T_BREAK      shift, and go to state 58
+    T_CONTINUE   shift, and go to state 59
+    T_SWITCH     shift, and go to state 60
+    T_CASE       shift, and go to state 61
+    T_DEFAULT    shift, and go to state 62
+    GOTO         shift, and go to state 63
+    T_DO         shift, and go to state 64
+    T_AND        shift, and go to state 65
+    T_NOT        shift, and go to state 66
+    T_INVERT     shift, and go to state 67
+    T_MULTIPLY   shift, and go to state 68
+    T_ADD        shift, and go to state 69
+    T_SUB        shift, and go to state 70
+    INC_OP       shift, and go to state 71
+    DEC_OP       shift, and go to state 72
+    T_LBRACKET   shift, and go to state 73
+    T_LCURLY     shift, and go to state 36
+    T_SEMICOLON  shift, and go to state 75
+    T_SIZEOF     shift, and go to state 76
+    T_NUM        shift, and go to state 77
+    T_VARIABLE   shift, and go to state 78
+    T_CHARVAL    shift, and go to state 79
+
+    PRIM_EXPR            go to state 80
+    POSTFIX_EXPR         go to state 81
+    UNARY_EXPR           go to state 82
+    UNARY_OP             go to state 83
+    CAST_EXPR            go to state 84
+    MULT_EXPR            go to state 85
+    ADD_EXPR             go to state 86
+    SHIFT_EXPR           go to state 87
+    COMPARISON_EXPR      go to state 88
+    EQUAL_EXPR           go to state 89
+    AND_EXPR             go to state 90
+    XOR_EXPR             go to state 91
+    INCLUSIVE_OR_EXPR    go to state 92
+    LOGIC_AND_EXPR       go to state 93
+    LOGIC_OR_EXPR        go to state 94
+    CONDITION_EXPR       go to state 95
+    ASSIGN_EXPR          go to state 96
+    EXPR                 go to state 97
+    STATEMENT            go to state 278
+    LABELED_STATEMENT    go to state 99
+    COMPOUND_STATEMENT   go to state 100
+    EXPR_STATEMENT       go to state 103
+    SELECT_STATEMENT     go to state 104
+    ITERATION_STATEMENT  go to state 105
+    JUMP_STATEMENT       go to state 106
+
+
+State 275
+
+  144 SELECT_STATEMENT: T_IF T_LBRACKET EXPR T_RBRACKET STATEMENT T_ELSE . STATEMENT
+
+    T_WHILE      shift, and go to state 54
+    T_FOR        shift, and go to state 55
+    T_IF         shift, and go to state 56
+    T_RETURN     shift, and go to state 57
+    T_BREAK      shift, and go to state 58
+    T_CONTINUE   shift, and go to state 59
+    T_SWITCH     shift, and go to state 60
+    T_CASE       shift, and go to state 61
+    T_DEFAULT    shift, and go to state 62
+    GOTO         shift, and go to state 63
+    T_DO         shift, and go to state 64
+    T_AND        shift, and go to state 65
+    T_NOT        shift, and go to state 66
+    T_INVERT     shift, and go to state 67
+    T_MULTIPLY   shift, and go to state 68
+    T_ADD        shift, and go to state 69
+    T_SUB        shift, and go to state 70
+    INC_OP       shift, and go to state 71
+    DEC_OP       shift, and go to state 72
+    T_LBRACKET   shift, and go to state 73
+    T_LCURLY     shift, and go to state 36
+    T_SEMICOLON  shift, and go to state 75
+    T_SIZEOF     shift, and go to state 76
+    T_NUM        shift, and go to state 77
+    T_VARIABLE   shift, and go to state 78
+    T_CHARVAL    shift, and go to state 79
+
+    PRIM_EXPR            go to state 80
+    POSTFIX_EXPR         go to state 81
+    UNARY_EXPR           go to state 82
+    UNARY_OP             go to state 83
+    CAST_EXPR            go to state 84
+    MULT_EXPR            go to state 85
+    ADD_EXPR             go to state 86
+    SHIFT_EXPR           go to state 87
+    COMPARISON_EXPR      go to state 88
+    EQUAL_EXPR           go to state 89
+    AND_EXPR             go to state 90
+    XOR_EXPR             go to state 91
+    INCLUSIVE_OR_EXPR    go to state 92
+    LOGIC_AND_EXPR       go to state 93
+    LOGIC_OR_EXPR        go to state 94
+    CONDITION_EXPR       go to state 95
+    ASSIGN_EXPR          go to state 96
+    EXPR                 go to state 97
+    STATEMENT            go to state 279
+    LABELED_STATEMENT    go to state 99
+    COMPOUND_STATEMENT   go to state 100
+    EXPR_STATEMENT       go to state 103
+    SELECT_STATEMENT     go to state 104
+    ITERATION_STATEMENT  go to state 105
+    JUMP_STATEMENT       go to state 106
+
+
+State 276
+
+  147 ITERATION_STATEMENT: T_DO STATEMENT T_WHILE T_RBRACKET EXPR T_LBRACKET . T_SEMICOLON
+
+    T_SEMICOLON  shift, and go to state 280
+
+
+State 277
+
+  150 ITERATION_STATEMENT: T_FOR T_LBRACKET DECLARATION EXPR_STATEMENT EXPR T_RBRACKET STATEMENT .
+
+    $default  reduce using rule 150 (ITERATION_STATEMENT)
+
+
+State 278
+
+  149 ITERATION_STATEMENT: T_FOR T_LBRACKET EXPR_STATEMENT EXPR_STATEMENT EXPR T_RBRACKET STATEMENT .
+
+    $default  reduce using rule 149 (ITERATION_STATEMENT)
+
+
+State 279
+
+  144 SELECT_STATEMENT: T_IF T_LBRACKET EXPR T_RBRACKET STATEMENT T_ELSE STATEMENT .
+
+    $default  reduce using rule 144 (SELECT_STATEMENT)
+
+
+State 280
+
+  147 ITERATION_STATEMENT: T_DO STATEMENT T_WHILE T_RBRACKET EXPR T_LBRACKET T_SEMICOLON .
+
+    $default  reduce using rule 147 (ITERATION_STATEMENT)
